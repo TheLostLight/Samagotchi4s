@@ -22,7 +22,7 @@ int main(void)
 	system_init();
 	
 	//start systick and puss the count down(),
-	hal_systimer_start(500, count_down());
+	hal_systimer_start(500, &count_down);
 	
 #ifdef SYS_INIT_FROM_CONSOLE
 	//Execute the console
