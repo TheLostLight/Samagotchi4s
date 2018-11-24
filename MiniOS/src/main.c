@@ -13,10 +13,16 @@
 #error "Define either SYS_INIT_FROM_CONSOLE or SYS_INIT_FROM_DEFAPP. Not both or none. See system.h"
 #endif
 
+// count down function reduce the satiety, energy, and happiness for 1
+void count_down();
+
 int main(void)
 {
 	//Initializes the system
 	system_init();
+	
+	//start systick and puss the count down(),
+	hal_systimer_start(500, &count_down);
 	
 #ifdef SYS_INIT_FROM_CONSOLE
 	//Execute the console
@@ -37,5 +43,24 @@ int main(void)
 	//Wait here until the timer's first tick
 	//TODO: Maybe go to sleep here?
 	while(1);
+}
+// s= satiety, e= energy, h= happiness
+void count_down(void){
+	if (satiety>0)
+	{
+		satiety-=satiety;
+	}else{println("the satiety is 0.")}
+		
+	if (energy>0)
+	{
+		energy-=energy;
+	}else{println("the energy is 0.")}
+	
+	if (happiness>0)
+	{
+		happiness-=happiness;
+	}else{println("the happiness is 0.")}
+	
+	
 }
 
