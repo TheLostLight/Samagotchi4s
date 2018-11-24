@@ -34,7 +34,7 @@ MINIOSAPP main(void){
 		 //delay
 		 display_cls();
 		 
-		 while(make_name()) display_cls();
+		 while(!make_name()) display_cls();
 		 
 		 display_cls();
 		 set_name(&user_pet.name);
@@ -107,7 +107,7 @@ bool make_name(void)
 	display_puts("(Press button 1 to confirm, any other to cancel)");
 	button_read(&selection);
 	
-	while(selection == NoButton);
+	while(selection == NoButton) button_read(&selection);
 	
 	if(selection == Button1) return true;
 	return false;
