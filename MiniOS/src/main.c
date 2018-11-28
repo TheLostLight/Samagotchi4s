@@ -18,6 +18,28 @@ void count_down();
 
 int main(void)
 {
+	/*system_init();
+	
+	hal_nvmem_start(1);
+	uint8_t file_name[] = "0:TamagPetStats.txt";
+	uint8_t test_file_name[] = "0:readTamagPetStat.txt";
+	uint8_t stats[] ="Dino 45 56 98";
+	uint32_t buffer_size = 14;
+	uint32_t result;
+	
+	//Writing pet stats to new file
+	hal_nvmem_fat_file_write(&file_name, &stats, buffer_size);
+	
+	
+	char return_stat [14];
+	
+	//reading from petStat
+	hal_nvmem_fat_file_read(&file_name, &return_stat, buffer_size);
+	
+	//Writing to new file using the string read from petStat.txt
+	hal_nvmem_fat_file_write(&test_file_name, &return_stat, buffer_size);*/
+
+	
 	//Initializes the system
 	system_init();
 	
@@ -44,6 +66,8 @@ int main(void)
 	//TODO: Maybe go to sleep here?
 	while(1);
 }
+
+
 // s= satiety, e= energy, h= happiness
 void count_down(void){
 	if (satiety>0)

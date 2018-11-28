@@ -132,6 +132,10 @@ void syscalls_entry_point(void){
 		case SVCADCChannelStatus:	hal_io_adc_channel_status( (tAdcChannel*) arg0);								break;
 		case SVCADCChannelRead:		*((uint32_t*)arg1) = hal_io_adc_channel_read( (tAdcChannel*) arg0);				break;
 		
+		//SdCard
+		case SVCSdCardRead : *((uint32_t*)arg3) = ((uint8_t*)arg0, (uint8_t*)arg1, (uint32_t)arg2);						break;
+		case SVCSdCardWrite: *((bool*)arg3) = ((uint8_t*)arg0, (uint8_t*)arg1, (uint32_t)arg2);	;						break;
+		
 		//Error
 		default:																									break;
 	}

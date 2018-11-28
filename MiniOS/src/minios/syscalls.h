@@ -78,7 +78,11 @@ enum{
 	SVCADCChannelEnable		= 46,
 	SVCADCChannelDisable	= 47,
 	SVCADCChannelStatus		= 48,
-	SVCADCChannelRead		= 49
+	SVCADCChannelRead		= 49,
+	
+	//SDcard
+	SVCSdCardRead			=50,
+	SVCSdCardWrite			=51
 	
 };
 
