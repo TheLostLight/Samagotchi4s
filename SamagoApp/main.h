@@ -15,9 +15,12 @@ void make_name( void );
 char decrement_cursor( void );
 char increment_cursor( void );
 
+void open_menu( int );
+void show_stats( void );
+
 char cursor[2] = {' ', '_'};
 
-uint8_t menu_options = 5;
+const uint8_t MENU_NUM = 5;
 uint8_t* main_menu[menu_options] = {"Feed", "Play", "Put to sleep", "Check Status", "Save"};
 
 #endif /* MAIN_H_ */

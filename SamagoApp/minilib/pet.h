@@ -37,9 +37,12 @@ void feed( pet* );
 void rest( pet* );
 void play( pet* );
 
-void draw();
+void draw(tBreed);
 
 void start_time(void);
 void stop_time(void);
+void delay_ms(uint32_t);
+
+const uint32_t MAX_STAT = 100;
 
 #endif /* PET_H_ */

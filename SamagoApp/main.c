@@ -31,7 +31,7 @@ MINIOSAPP main(void){
 		 display_gotoxy(0, 2);
 		 display_puts("Please enter a name for your new pet:");
 		 
-		 //delay
+		 delay(1000);
 		 display_cls();
 		 
 		 while(!make_name()) display_cls();
@@ -53,11 +53,32 @@ MINIOSAPP main(void){
 		display_gotoxy(0, 3);
 		display_printf("%s missed you.", user_pet.name);
 		
-		//delay
+		delay_ms(800);
 	}
 	
+	volatile int menuc = 0;
+	button_read(&selection); //Clear buffer
+	print_menu_header();
 	start_time();
-	
+
+	while(true)
+	{
+		display_puts(main_menu[menuc]);
+		button_read(&selection);
+
+		switch(selection)
+		{
+			case NoButton: break;
+			case Button0 : show_stats();
+			case Button1 : if(menuc < 1) menuc = MENU_NUM-1; else --menuc; break;
+			case Button2 : show_menu(menuc); break;
+			case Button3 : menu = (menu+1)%MENU_NUM; break;
+			default      : break;
+		}
+
+		update_stats(&user_pet);
+	}
+
 	return 0;	
 }
 
@@ -133,5 +154,103 @@ void increment_cursor(void)
 		
 		if(cursor[0] > 'z') cursor[0] = ' '; //inserts empty space if user increments above 'z'
 	}
+}
+
+void open_menu(int op)
+{
+	switch(op)
+	{
+		case 0: display_cls(); 
+			display_gotoxy(0, 0); 
+			display_printf("You give %s some pet food");
+			delay_ms(800);
+			draw(user_pet.breed);
+			feed( &user_pet );
+			display_cls();
+			display_gotoxy(0, 0);
+			display_printf("%s's hunger is now %n", user_pet.name, MAX_STAT-user_pet.satiety); //Hunger is the inverse of satiety.
+			break;
+
+		case 1: display_cls(); 
+			display_gotoxy(0, 0); 
+			display_printf("You play with %s for a while");
+			delay_ms(800);
+			draw(user_pet.breed);
+			play( &user_pet );
+			display_cls();
+			display_gotoxy(0, 0);
+			display_printf("%s's happiness is now %n", user_pet.name, user_pet.happiness);
+			break;
+
+		case 2: display_cls(); 
+			display_gotoxy(0, 0); 
+			display_printf("%s takes a nap...");
+			delay_ms(800);
+			draw(user_pet.breed);
+			rest( &user_pet );
+			display_cls();
+			display_gotoxy(0, 0);
+			display_printf("%s's energy is now %n", user_pet.name, user_pet.energy);
+			break;
+
+		case 3: show_stats(); 
+			return;
+
+		case 4: stop_time();
+			display_cls();
+			save_file( &user_pet );
+			display_gotoxy(0, 0);
+			display_puts("Your file has been saved");
+			start_time();
+			break;
+
+		default: display_cls();
+			 display_gotoxy(0, 0);
+			 display_puts("Error: menu selection out of bounds");
+			 break;
+	}
+
+	print_menu_header();
+}
+
+void show_stats()
+{
+	stop_time();
+	update_stats(&user_pet);
+
+	display_cls();
+	display_gotoxy(0, 0);
+	display_printf("Once finished viewing,");
+	display_gotoxy(0, 1);
+	display_puts("press any button to continue");
+	delay_ms(1000);
+	read_button(&selection); //clear input in case user accidentally presses button here
+	
+	display_cls();
+	display_gotoxy(0, 0);
+	display_printf("Hunger:    %n", MAX_STATS-user_pet.satiety);
+	display_gotoxy(0, 1);
+	display_printf("Energy:    %n", user_pet.energy);
+	display_gotoxy(0, 2);
+	display_printf("Happiness: %n", user_pet.happiness);
+	display_gotoxy(0, 3);
+	display_printf("Age (min): %n", user_pet.age);
+
+	read_button(&selection); //clear once more
+
+	do read_button(&selection);
+	while (selection == NoButton);
+
+	start_time();
+	print_menu_header();
+}
+
+void print_menu_header()
+{
+	display_cls();
+	display_gotoxy(0, 0);
+	display_printf("What would you and %s like to do?", user_pet.name);
+	display_gotoxy(0, 3);
+	button_read(&selection);
 }
 

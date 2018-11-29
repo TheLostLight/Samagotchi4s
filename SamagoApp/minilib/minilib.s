@@ -1,8 +1,9 @@
-.equ	SVCLedSet,		    0
-.equ	SVCLedRead,		    1
+.equ	SVCLedSet,          0
+.equ	SVCLedRead,         1
 .equ	SVCButtonRead,      2
 .equ	SVCClockRead,	    3
 .equ	SVCClockWrite,	    4
+.equ	SVCDraw,            8
 .equ	SVCDisplayCls,      9
 .equ	SVCDisplayPutc,     10
 .equ	SVCDisplayGotoxy,   11
@@ -17,6 +18,7 @@
 .equ    SVCPlay,            20
 .equ	SVCStartTime,       21
 .equ	SVCStopTime,        22
+.equ	SVCDelayMs,         23
 
 .thumb_func 
 .global led_set
@@ -46,6 +48,12 @@ clock_read:
 .global clock_write
 clock_write:
 	svc SVCClockWrite
+	bx lr
+
+.thumb_func
+.global draw
+draw:
+	svc SVCDraw
 	bx lr
 
 .thumb_func
@@ -136,4 +144,10 @@ start_time:
 .global stop_time
 stop_time:
 	svc SVCStopTime
+	bx lr
+
+.thumb_func
+.global delay_ms
+delay_ms:
+	svc SVCDelayMs
 	bx lr
