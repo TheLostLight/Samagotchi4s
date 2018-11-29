@@ -2,7 +2,7 @@
 
 Samagotchi4s is a terrible portmanteau of Tamagotchi and Sam4s
 
-- [main.c](MiniOS/src/main.c) for the SamagOS
+- [main.c](SamagOS/src/main.c) for the SamagOS
 
 - [main.c](SamagoApp/main.c) for the SamagoApp.
 
