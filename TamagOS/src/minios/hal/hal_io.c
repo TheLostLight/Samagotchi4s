@@ -21,6 +21,8 @@
 static const int buttons_irq_priority = 5;
 static void (*button_callback)(uint32_t);
 static void button_handler(uint32_t, uint32_t);
+static void button_event(uint32_t);
+static tButtonNum button_pressed = NoButton;
 
 //Display definitions
 static uint32_t display_curr_line = 0;
@@ -408,12 +410,12 @@ void hal_io_button_startall_poll(){
 *
 *	@param callback Button pressed callback
 */
-void hal_io_button_startall_int( void (*callback) (tButtonNum) ){
+void hal_io_button_startall_int( void ){
 	//NOTES:
 	//	-Button interrupts trigger on raising edge (see PIN_PUSHBUTTON_x_ATTR)
 	
 	//set callback
-	button_callback = callback; 
+	button_callback = button_event; 
 
 	// Configure Pushbutton 0
 	pmc_enable_periph_clk(PIN_PUSHBUTTON_0_ID);
@@ -461,17 +463,12 @@ void hal_io_button_startall_int( void (*callback) (tButtonNum) ){
 *
 *   @return The state of the button
 */
-tButtonState hal_io_button_read( tButtonNum button_num ){
+tButtonNum hal_io_button_read( tButtonNum button_num ){
 	
-	//To do... update state by setting falling edge + rising edge interrupts
+	tButtonNum b = button_pressed;
+	button_pressed = NoButton;
 	
-	switch( button_num ){
-		case 0: return !ioport_get_pin_level( BUTTON0_PIN );
-		case 1: return !ioport_get_pin_level( BUTTON1_PIN );
-		case 2: return !ioport_get_pin_level( BUTTON2_PIN );
-		case 3: return !ioport_get_pin_level( BUTTON3_PIN );
-		default: return ButtonUnpressed; //Button does not exist		
-	}
+	return b;
 }
 
 //The Button interrupt service routine (ISR)
@@ -496,6 +493,11 @@ static void button_handler(uint32_t id, uint32_t mask){
 	else{
 		//Error
 	}
+}
+
+static void button_event(tButtonNum b)
+{
+	button_pressed = b;
 }
 
 /**

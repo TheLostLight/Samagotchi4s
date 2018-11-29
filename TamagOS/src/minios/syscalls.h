@@ -12,6 +12,10 @@
 
 void syscalls_init(void);
 
+// count down function reduce the satiety, energy, and happiness by 1
+void count_down();
+
+
 /**
 *	System call numbers
 */

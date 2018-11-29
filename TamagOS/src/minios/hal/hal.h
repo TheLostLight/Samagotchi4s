@@ -15,7 +15,7 @@
 
 typedef uint32_t tLedNum;		/**< Led number type */
 typedef bool tLedState;			/**< Led state type */
-typedef uint32_t tButtonNum;	/**< Button number type */
+typedef int32_t tButtonNum;	/**< Button number type */
 typedef uint32_t tButtonState;	/**< Button state type */
 typedef uint32_t tSensorId;		/**< Sensor ID type */
 typedef uint32_t tSerialId;		/**< Serial ID type */
@@ -26,7 +26,7 @@ typedef uint32_t tPio;		/**< Parallel IO Port ID */
 typedef uint32_t tPioPinDir;	/**< Parallel IO Pin Direction */
 typedef uint32_t tPwmType;		/**< PWM Pin Type */
 				
-enum tButtonNum		{ Button0 = 0, Button1, Button2, Button3, Button4 };	
+enum tButtonNum		{ NoButton = -1, Button0, Button1, Button2, Button3, Button4 };	
 enum tButtonState	{ ButtonUnpressed = false, ButtonPressed };				
 enum tSensorId		{ SensorLight = 0, SensorTemp };					
 enum tSerialId		{ SerialA = 0, SerialB };							
@@ -142,7 +142,7 @@ void hal_io_clock_write( tTime* );
 void hal_io_clock_read( tTime* );
 
 //Buttons
-void hal_io_button_startall_int( void(*)(tButtonNum) );
+void hal_io_button_startall_int( void );
 void hal_io_button_startall_poll( void );
 tButtonState hal_io_button_read( tButtonNum );
 

@@ -69,7 +69,7 @@ void syscalls_entry_point(void){
 		//Button
 		//case SVCButtonStartEv:		/* Not supported yet */										break;
 		case SVCButtonStartallPoll:	hal_io_button_startall_poll();										break;	
-		case SVCButtonRead:			*((tButtonState*)arg1) = hal_io_button_read( (tButtonNum)arg0 );	break;	
+		case SVCButtonRead:			*((tButtonNum*)arg0) = hal_io_button_read();	break;	
 		
 		//Clock
 		case SVCClockWrite:			hal_io_clock_write( (tTime*)arg0 );								break;
@@ -94,7 +94,7 @@ void syscalls_entry_point(void){
 		case SVCDisplayCurrLine:	*((uint32_t*)arg0) = hal_io_display_currline();					break;
 		
 		//Millisecond Timer
-		//case SVCMtimerStartEv:	/*Not supported yet*/											break;
+		case SVCMtimerStartEv:		hal_io_mtimer_start(500, &count_down);							break;
 		case SVCMtimerStartPoll:	hal_io_mtimer_start( (uint32_t)arg0  );							break;
 		case SVCMtimerStop:			hal_io_mtimer_stop();											break;
 		case SVCMtimerRead:			*((uint32_t*)arg0) = hal_io_mtimer_read( );						break;
@@ -134,5 +134,23 @@ void syscalls_entry_point(void){
 		
 		//Error
 		default:																									break;
+	}
+	
+	void count_down(void){
+		if (user_pet->satiety>0)
+		{
+			user_pet->satiety--;
+		}
+		if (user_pet->energy>0)
+		{
+			user_pet->energy--;
+		}
+		
+		if (user_pet->happiness>0)
+		{
+			user_pet->happiness--;
+		}
+		
+		user_pet->age++;
 	}
 }

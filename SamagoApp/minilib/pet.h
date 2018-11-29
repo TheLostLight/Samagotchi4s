@@ -16,7 +16,7 @@ typedef struct{
 	uint32_t energy;
 	uint32_t happiness;
 	uint32_t age;
-	uint8_t  name;
+	uint8_t*  name;
 	tBreed   breed;
 	
 }pet;

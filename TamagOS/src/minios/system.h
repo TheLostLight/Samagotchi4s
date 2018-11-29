@@ -42,8 +42,8 @@ void system_panic( const uint8_t* );
 	
 //   ---------   INIT FROM    ---------
 // (Comment one or the other)
-#define SYS_INIT_FROM_CONSOLE		//Uncomment to enable and init from the console	
-//#define SYS_INIT_FROM_DEFAPP		//Uncomment to disable the console and load SYS_APP_DEFAULT_NAME at init
+//#define SYS_INIT_FROM_CONSOLE		//Uncomment to enable and init from the console	
+#define SYS_INIT_FROM_DEFAPP		//Uncomment to disable the console and load SYS_APP_DEFAULT_NAME at init
 
 
 //   ---------   PRESENT IO    ---------
