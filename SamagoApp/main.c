@@ -43,7 +43,7 @@ MINIOSAPP main(void){
 		 while(!make_name()) display_cls();
 		 
 		 display_cls();
-		 //set_name(&user_pet.name);
+		 set_name(&user_pet.name);
 		 
 		 display_gotoxy(0, 0);
 		 display_printf("Congratulations!");
@@ -127,9 +127,9 @@ MINIOSAPP main(void){
 bool make_name(void)
 {
 	display_gotoxy(0, 0);
-	display_puts("Buttons 1 & 2: scroll");
+	display_puts("Buttons 1 & 3: scroll");
 	display_gotoxy(0, 1);
-	display_puts("Button 3: enter");
+	display_puts("Button 2: enter");
 	display_gotoxy(0, 2);
 	display_puts("Button 0: confirm");
 	
@@ -153,13 +153,12 @@ bool make_name(void)
 			switch(selection)
 			{
 				case Button1 : decrement_cursor(); break;
-				case Button2 : increment_cursor(); break;
-				case Button3 : display_putc(cursor[0]); buffer[pos++] = cursor[0]; break;
+				case Button2 : display_putc(cursor[0]); buffer[pos++] = cursor[0]; break;
+				case Button3 : increment_cursor(); break;
 				default		 : break;
 			}
 		}
 		if(selection == Button0) {display_putc(cursor[0]); break;}
-		
 	}
 	
 	for(int i=0; i<8; i++) user_pet.name[i] = buffer[i];
@@ -304,7 +303,7 @@ void print_menu_header()
 void display_clr_line(int line)
 {
 	display_gotoxy(0, line);
-	display_puts("                         ");
+	display_puts("                              ");
 	display_gotoxy(0, line);
 }
 
