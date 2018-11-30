@@ -11,6 +11,7 @@
 #include "HAL/hal.h"
 #include "syscalls.h"
 #include "scheduler.h"
+#include "status.h"
 
 void syscalls_entry_point(void);
 
@@ -68,7 +69,7 @@ void syscalls_entry_point(void){
 	switch(svc_number){		
 		//Button
 		//case SVCButtonStartEv:		/* Not supported yet */										break;
-		case SVCButtonStartallPoll:	hal_io_button_startall_poll();										break;	
+		//case SVCButtonStartallPoll:	hal_io_button_startall_poll();										break;	
 		case SVCButtonRead:			*((tButtonState*)arg1) = hal_io_button_read( (tButtonNum)arg0 );	break;	
 		
 		//Clock
@@ -77,30 +78,40 @@ void syscalls_entry_point(void){
 		
 		//Serial
 		//case SVCSerialStartEv:		/*Not supported yet  */										break;
-		case SVCSerialStartPoll:	hal_io_serial_start_poll( (tSerialId)arg0, (uint32_t)arg1 );		break;
-		case SVCSerialPutc:			hal_io_serial_putc( (tSerialId)arg0, (uint8_t)arg1 );				break;
-		case SVCSerialGetc:			*((uint32_t*)arg1) = hal_io_serial_getc( (tSerialId)arg0 );		break;
+		//case SVCSerialStartPoll:	hal_io_serial_start_poll( (tSerialId)arg0, (uint32_t)arg1 );		break;
+		//case SVCSerialPutc:			hal_io_serial_putc( (tSerialId)arg0, (uint8_t)arg1 );				break;
+		//case SVCSerialGetc:			*((uint32_t*)arg1) = hal_io_serial_getc( (tSerialId)arg0 );		break;
 		
 		//Sensor
 		//case SVCSensorStartEv:		/* Not supported yet */										break;
-		case SVCSensorStartPoll:	hal_io_sensor_start_poll( (tSensorId)arg0 );						break;
-		case SVCSensorRead:			*((uint32_t*)arg1) = hal_io_sensor_read( (tSensorId)arg0 );		break;
+		//case SVCSensorStartPoll:	hal_io_sensor_start_poll( (tSensorId)arg0 );						break;
+		//case SVCSensorRead:			*((uint32_t*)arg1) = hal_io_sensor_read( (tSensorId)arg0 );		break;
 		
 		//Display		
 		case SVCDisplayPutc:		hal_io_display_putc( (uint8_t)arg0 );								break;
 		case SVCDisplayCls:			hal_io_display_cls();												break;
 		case SVCDisplayGotoxy:		hal_io_display_gotoxy( (uint32_t)arg0, (uint32_t)arg1 );			break;
 		case SVCDisplayNumLines:	*((uint32_t*)arg0) = hal_io_display_numlines();					break;
-		case SVCDisplayCurrLine:	*((uint32_t*)arg0) = hal_io_display_currline();					break;
+		//case SVCDisplayCurrLine:	*((uint32_t*)arg0) = hal_io_display_currline();					break;
+		
+		//Update Pet Stats
+		case SVCUpdateStats:  update_pet_stats((pet*)arg0);			  break;
+		case SVCSetName:      set_pet_name((uint32_t*)arg0);		  break;
+		case SVCReadName:    *((uint32_t*)arg0) = read_pet_name();    break;
+		case SVCSaveFile:    save_pet_file();						  break;
+		case SVCIsNewFile:   *((uint32_t*)arg0) = is_new_file();      break;
+		case SVCFeed:		 feed_pet();							  break;
+		case SVCRest:		 rest_pet();							  break;
+		case SVCPlay:		 play_with_pet();					      break;
 		
 		//Millisecond Timer
 		//case SVCMtimerStartEv:	/*Not supported yet*/											break;
-		case SVCMtimerStartPoll:	hal_io_mtimer_start( (uint32_t)arg0  );							break;
-		case SVCMtimerStop:			hal_io_mtimer_stop();											break;
-		case SVCMtimerRead:			*((uint32_t*)arg0) = hal_io_mtimer_read( );						break;
+		//case SVCMtimerStartPoll:	hal_io_mtimer_start( (uint32_t)arg0  );							break;
+		//case SVCMtimerStop:			hal_io_mtimer_stop();											break;
+		//case SVCMtimerRead:			*((uint32_t*)arg0) = hal_io_mtimer_read( );						break;
 
 		//System
-		case SVCSysinfo:
+		//case SVCSysinfo:
 		/* Not available yet. Here the system should strcpy the system name and version
 		   into a userland buffer. System name and version are available from system.h
 		   

@@ -57,9 +57,9 @@
 #define CONF_BOARD_TWI0
 
 // Enable the OLED screen & SD card
-//#define CONF_BOARD_SPI
-//#define CONF_BOARD_SPI_NPCS1
-//#define CONF_BOARD_SPI_NPCS2
+#define CONF_BOARD_SPI
+#define CONF_BOARD_SPI_NPCS1
+#define CONF_BOARD_SPI_NPCS2
 
 #define CONF_BOARD_OLED_UG_2832HSWEG04
 

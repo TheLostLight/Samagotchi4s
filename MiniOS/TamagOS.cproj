@@ -870,7 +870,10 @@
     <Compile Include="src\ASF\sam\drivers\pwm\pwm.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status.h">
+    <Compile Include="src\minios\status.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\minios\status.h">
       <SubType>compile</SubType>
     </Compile>
     <None Include="src\ASF\sam\drivers\pwm\pwm.h">

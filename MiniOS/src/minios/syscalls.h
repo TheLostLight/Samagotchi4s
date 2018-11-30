@@ -22,40 +22,50 @@ enum{
 	//SVCLedRead				= 1,
 
 	//Button
-	SVCButtonStartallEv		= 2,
-	SVCButtonStartallPoll	= 3,
-	SVCButtonRead			= 4,
+	//SVCButtonStartallEv		= 2,
+	//SVCButtonStartallPoll	= 3,
+	SVCButtonRead			= 2,
 
 	//Clock
-	SVCClockRead			= 5,
-	SVCClockWrite			= 6,
+	SVCClockRead			= 3,
+	SVCClockWrite			= 4,
 	
 	//Serial
-	SVCSerialStartEv		= 7,
-	SVCSerialStartPoll		= 8,
-	SVCSerialPutc			= 9,
-	SVCSerialGetc			= 10,
+	//SVCSerialStartEv		= 7,
+	//SVCSerialStartPoll		= 8,
+	//SVCSerialPutc			= 9,
+	//SVCSerialGetc			= 10,
 	
 	//Sensors
-	SVCSensorStartEv		= 11,
-	SVCSensorStartPoll		= 12,
-	SVCSensorRead			= 13,
+	//SVCSensorStartEv		= 11,
+	//SVCSensorStartPoll		= 12,
+	//SVCSensorRead			= 13,
 
 	//Display
-	SVCDisplayCls			= 14,
-	SVCDisplayPutc			= 15,
-	SVCDisplayGotoxy		= 16,
-	SVCDisplayNumLines		= 17,
-	SVCDisplayCurrLine		= 18,
+	SVCDisplayCls			= 9,
+	SVCDisplayPutc			= 10,
+	SVCDisplayGotoxy		= 11,
+	SVCDisplayNumLines		= 12,
+	//SVCDisplayCurrLine		= 18,
 
 	//Millisecond timer
-	SVCMtimerStartEv		= 19,
-	SVCMtimerStartPoll		= 20,
-	SVCMtimerStop			= 21,
-	SVCMtimerRead			= 22,
+	//SVCMtimerStartEv		= 19,
+	//SVCMtimerStartPoll		= 20,
+	//SVCMtimerStop			= 21,
+	//SVCMtimerRead			= 22,
 
 	//System
-	SVCSysinfo				= 23,
+	//SVCSysinfo				= 23,
+	
+	//Update Pet
+	SVCUpdateStats			=13,
+	SVCSetName				=14,
+	SVCReadName				=15,
+	SVCSaveFile				=16,
+	SVCIsNewFile			=17,
+	SVCFeed					=18,
+	SVCRest					=19,
+	SVCPlay					=20,
 	
 	//Scheduler
 	SVCProcessCreate		= 27,
