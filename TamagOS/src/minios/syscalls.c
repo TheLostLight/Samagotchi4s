@@ -11,6 +11,7 @@
 #include "HAL/hal.h"
 #include "syscalls.h"
 #include "scheduler.h"
+#include "pet.h"
 
 void syscalls_entry_point(void);
 
@@ -24,6 +25,9 @@ void syscalls_init(void){
 	//Starts SVCs (registers SVC callback)
 	hal_cpu_svc_start( syscalls_entry_point );
 }
+
+// count down function reduce the satiety, energy, and happiness by 1
+void tick_stats(void);
 
 /**
 *	Syscalls Entry Point
@@ -68,8 +72,8 @@ void syscalls_entry_point(void){
 	switch(svc_number){		
 		//Button
 		//case SVCButtonStartEv:		/* Not supported yet */										break;
-		case SVCButtonStartallPoll:	hal_io_button_startall_poll();										break;	
-		case SVCButtonRead:			*((tButtonNum*)arg0) = hal_io_button_read();	break;	
+		case SVCButtonStartallPoll:	hal_io_button_startall_poll();									break;	
+		case SVCButtonRead:			*((tButtonNum*)arg0) = hal_io_button_read();	                break;	
 		
 		//Clock
 		case SVCClockWrite:			hal_io_clock_write( (tTime*)arg0 );								break;
@@ -77,26 +81,26 @@ void syscalls_entry_point(void){
 		
 		//Serial
 		//case SVCSerialStartEv:		/*Not supported yet  */										break;
-		case SVCSerialStartPoll:	hal_io_serial_start_poll( (tSerialId)arg0, (uint32_t)arg1 );		break;
-		case SVCSerialPutc:			hal_io_serial_putc( (tSerialId)arg0, (uint8_t)arg1 );				break;
+		case SVCSerialStartPoll:	hal_io_serial_start_poll( (tSerialId)arg0, (uint32_t)arg1 );	break;
+		case SVCSerialPutc:			hal_io_serial_putc( (tSerialId)arg0, (uint8_t)arg1 );			break;
 		case SVCSerialGetc:			*((uint32_t*)arg1) = hal_io_serial_getc( (tSerialId)arg0 );		break;
 		
 		//Sensor
 		//case SVCSensorStartEv:		/* Not supported yet */										break;
-		case SVCSensorStartPoll:	hal_io_sensor_start_poll( (tSensorId)arg0 );						break;
+		case SVCSensorStartPoll:	hal_io_sensor_start_poll( (tSensorId)arg0 );					break;
 		case SVCSensorRead:			*((uint32_t*)arg1) = hal_io_sensor_read( (tSensorId)arg0 );		break;
 		
 		//Display		
-		case SVCDisplayPutc:		hal_io_display_putc( (uint8_t)arg0 );								break;
-		case SVCDisplayCls:			hal_io_display_cls();												break;
-		case SVCDisplayGotoxy:		hal_io_display_gotoxy( (uint32_t)arg0, (uint32_t)arg1 );			break;
+		case SVCDisplayPutc:		hal_io_display_putc( (uint8_t)arg0 );							break;
+		case SVCDisplayCls:			hal_io_display_cls();											break;
+		case SVCDisplayGotoxy:		hal_io_display_gotoxy( (uint32_t)arg0, (uint32_t)arg1 );		break;
 		case SVCDisplayNumLines:	*((uint32_t*)arg0) = hal_io_display_numlines();					break;
 		case SVCDisplayCurrLine:	*((uint32_t*)arg0) = hal_io_display_currline();					break;
 		
-		//Millisecond Timer
-		case SVCMtimerStartEv:		hal_io_mtimer_start(500, &count_down);							break;
+		//Millisecond Timer //mtimer throws Precise Data Bus error :( Switching to systimer
+		case SVCMtimerStartEv:		hal_io_mtimer_start_int(1000, tick_stats); /*why two e's in restart?*/        break; 
 		case SVCMtimerStartPoll:	hal_io_mtimer_start( (uint32_t)arg0  );							break;
-		case SVCMtimerStop:			hal_io_mtimer_stop();											break;
+		case SVCMtimerStop:			hal_cpu_systimer_stop();										break;
 		case SVCMtimerRead:			*((uint32_t*)arg0) = hal_io_mtimer_read( );						break;
 
 		//System
@@ -132,25 +136,41 @@ void syscalls_entry_point(void){
 		case SVCADCChannelStatus:	hal_io_adc_channel_status( (tAdcChannel*) arg0);								break;
 		case SVCADCChannelRead:		*((uint32_t*)arg1) = hal_io_adc_channel_read( (tAdcChannel*) arg0);				break;
 		
+		//Pet
+		case SVCUpdateStats:        update_petstats((pet*)arg0);                                                    break;
+		case SVCSetName:            user_pet.name = ((pet*)arg0)->name;                                             break;
+		case SVCReadName:           ((pet*)arg0)->name = user_pet.name;                                             break;
+		case SVCPetFeed:            feed_pet((pet*)arg0);                                                           break;
+		case SVCPetRest:            rest_pet((pet*)arg0);                                                           break;
+		case SVCPetPlay:            play_pet((pet*)arg0);                                                           break;
+		
+		//File
+		case SVCSaveFile:           break;
+		case SVCIsNewFile:          *((bool*)arg0) = isNewFile;                                                     break;
+		
+		//Control
+		case SVCDelayMS:            hal_cpu_delay((uint32_t)arg0);    /*alternative to putting thread to sleep*/    break;
+		case SVCDisplayDraw:        for(int i=0; i<(int)arg1; i++) show_full_screen((tBreed)arg0);                        break;
+		
 		//Error
 		default:																									break;
 	}
-	
-	void count_down(void){
-		if (user_pet->satiety>0)
-		{
-			user_pet->satiety--;
-		}
-		if (user_pet->energy>0)
-		{
-			user_pet->energy--;
-		}
-		
-		if (user_pet->happiness>0)
-		{
-			user_pet->happiness--;
-		}
-		
-		user_pet->age++;
+}
+
+void tick_stats(){
+	if (user_pet.satiety>0)
+	{
+		user_pet.satiety--;
 	}
+	if (user_pet.energy>0)
+	{
+		user_pet.energy--;
+	}
+	
+	if (user_pet.happiness>0)
+	{
+		user_pet.happiness--;
+	}
+	
+	user_pet.age++;
 }

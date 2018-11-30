@@ -1,24 +1,26 @@
 .equ	SVCLedSet,          0
 .equ	SVCLedRead,         1
-.equ	SVCButtonRead,      2
-.equ	SVCClockRead,	    3
-.equ	SVCClockWrite,	    4
-.equ	SVCDraw,            8
-.equ	SVCDisplayCls,      9
-.equ	SVCDisplayPutc,     10
-.equ	SVCDisplayGotoxy,   11
-.equ	SVCDisplayNumLines, 12
-.equ	SVCUpdateStats,     13
-.equ	SVCSetName,         14
-.equ	SVCReadName,        15
-.equ	SVCSaveFile,        16
-.equ	SVCIsNewFile,       17
-.equ	SVCFeed,            18
-.equ	SVCRest,            19
-.equ    SVCPlay,            20
-.equ	SVCStartTime,       21
-.equ	SVCStopTime,        22
-.equ	SVCDelayMs,         23
+.equ	SVCButtonRead,      4
+.equ	SVCClockRead,	    5
+.equ	SVCClockWrite,	    6
+
+.equ	SVCDisplayCls,      14
+.equ	SVCDisplayPutc,     15
+.equ	SVCDisplayGotoxy,   16
+.equ	SVCDisplayNumLines, 17
+.equ	SVCDisplayCurrLine, 18
+.equ	SVCStartTime,       19
+.equ	SVCStopTime,        21
+.equ	SVCUpdateStats,     50
+.equ	SVCSetName,         51
+.equ	SVCReadName,        52
+.equ	SVCFeed,            53
+.equ	SVCRest,            54
+.equ    SVCPlay,            55
+.equ	SVCSaveFile,        56
+.equ	SVCIsNewFile,       57
+.equ	SVCDelayMs,         58
+.equ	SVCDraw,            59
 
 .thumb_func 
 .global led_set
@@ -51,12 +53,6 @@ clock_write:
 	bx lr
 
 .thumb_func
-.global draw
-draw:
-	svc SVCDraw
-	bx lr
-
-.thumb_func
 .global display_cls
 display_cls:
 	svc SVCDisplayCls
@@ -78,6 +74,12 @@ display_gotoxy:
 .global display_numlines
 display_numlines:
 	svc SVCDisplayNumLines
+	bx lr
+
+.thumb_func
+.global display_current_line
+display_current_line:
+	svc SVCDisplayCurrLine
 	bx lr
 
 .thumb_func
@@ -129,12 +131,6 @@ play:
 	bx lr
 
 .thumb_func
-.global draw
-draw:
-	svc SVCDraw
-	bx lr
-
-.thumb_func
 .global start_time
 start_time:
 	svc SVCStartTime
@@ -150,4 +146,10 @@ stop_time:
 .global delay_ms
 delay_ms:
 	svc SVCDelayMs
+	bx lr
+
+.thumb_func
+.global draw
+draw:
+	svc SVCDraw
 	bx lr

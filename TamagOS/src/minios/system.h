@@ -33,7 +33,7 @@ void system_panic( const uint8_t* );
 #define SYS_APP_MAX_SIZE			(SYS_USER_MEM_AVAILABLE/4)		//QUARTER of Total User Mem Available  
 #define SYS_LOADER_BUFFER_MAX_SIZE	(SYS_USER_MEM_AVAILABLE/4)		//QUARTER of Total User Mem Available
 
-#define SYS_APP_DEFAULT_NAME		"App.bin"
+#define SYS_APP_DEFAULT_NAME		"SamagoApp.bin"
 #define SYS_PANIC_MSG_MAX_LENGTH	50
 #define SYS_CONSOLE_NEWLINE			"\n\r"		//Some serial console like putty use \n\r as newlines,
 												//others like Atmel's Terminal use only \n. Choose accordingly.

@@ -12,10 +12,6 @@
 
 void syscalls_init(void);
 
-// count down function reduce the satiety, energy, and happiness by 1
-void count_down();
-
-
 /**
 *	System call numbers
 */
@@ -82,8 +78,23 @@ enum{
 	SVCADCChannelEnable		= 46,
 	SVCADCChannelDisable	= 47,
 	SVCADCChannelStatus		= 48,
-	SVCADCChannelRead		= 49
+	SVCADCChannelRead		= 49,
 	
+	//Pet
+	SVCUpdateStats          = 50,
+	SVCSetName              = 51,
+	SVCReadName             = 52,
+	SVCPetFeed              = 53,
+	SVCPetRest              = 54,
+	SVCPetPlay              = 55,
+	
+	//File
+	SVCSaveFile             = 56,
+	SVCIsNewFile            = 57,
+	
+	//Control
+	SVCDelayMS              = 58,
+	SVCDisplayDraw          = 59
 };
 
 

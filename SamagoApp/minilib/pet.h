@@ -9,19 +9,19 @@
 #ifndef PET_H_
 #define PET_H_
 
-enum tBreed{Dog=0, Cat, Turtle, Dragon};
+typedef uint32_t tBreed;
+
+enum tBreed{Crab=0, Unicorn};
 
 typedef struct{
 	uint32_t satiety;
 	uint32_t energy;
 	uint32_t happiness;
 	uint32_t age;
-	uint8_t*  name;
+	char name[8];
 	tBreed   breed;
 	
 }pet;
-
-pet user_pet;
 
 void update_stats(pet*);
 
@@ -37,7 +37,7 @@ void feed( pet* );
 void rest( pet* );
 void play( pet* );
 
-void draw(tBreed);
+void draw(tBreed, uint32_t);
 
 void start_time(void);
 void stop_time(void);

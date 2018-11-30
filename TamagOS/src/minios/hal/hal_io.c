@@ -11,6 +11,7 @@
 #include <stdint-gcc.h>	//defs for size-specific primitive data types
 #include <stdbool.h>	//defs for true and false
 #include "hal.h"
+#include "pet.h"
 
 //Button definitions
 #define BUTTON0_PIN IOPORT_CREATE_PIN( PIOA, 2 )
@@ -21,7 +22,7 @@
 static const int buttons_irq_priority = 5;
 static void (*button_callback)(uint32_t);
 static void button_handler(uint32_t, uint32_t);
-static void button_event(uint32_t);
+static void button_event(tButtonNum);
 static tButtonNum button_pressed = NoButton;
 
 //Display definitions
@@ -32,6 +33,10 @@ static void (*timer_callback) (void);
 
 //Time definitions
 static void rtc_setup(void);
+
+//draw element
+unsigned char TargetRow, TargetColumn = 30;
+bool flag = true;
 
 //Sensor definitions
 static void light_start(void);
@@ -269,8 +274,8 @@ void hal_io_display_cls(void){
 *	@param y y coordinate
 */
 void hal_io_display_gotoxy( uint32_t x, uint32_t y ){
-	ssd1306_set_page_address( display_curr_line = x);
-	ssd1306_set_column_address(y);
+	ssd1306_set_page_address( display_curr_line = y); //this way's more intuitive
+	ssd1306_set_column_address(x);
 }
 
 
@@ -419,7 +424,7 @@ void hal_io_button_startall_int( void ){
 
 	// Configure Pushbutton 0
 	pmc_enable_periph_clk(PIN_PUSHBUTTON_0_ID);
-	pio_set_debounce_filter(PIN_PUSHBUTTON_0_PIO, PIN_PUSHBUTTON_0_MASK, 10);
+	pio_set_debounce_filter(PIN_PUSHBUTTON_0_PIO, PIN_PUSHBUTTON_0_MASK, 20); //trying a higher mask value
 	pio_handler_set(PIN_PUSHBUTTON_0_PIO, PIN_PUSHBUTTON_0_ID,
 					PIN_PUSHBUTTON_0_MASK, PIN_PUSHBUTTON_0_ATTR, button_handler);
 	NVIC_EnableIRQ((IRQn_Type) PIN_PUSHBUTTON_0_ID);
@@ -428,7 +433,7 @@ void hal_io_button_startall_int( void ){
 	
 	// Configure Pushbutton 1
 	pmc_enable_periph_clk(PIN_PUSHBUTTON_1_ID);
-	pio_set_debounce_filter(PIN_PUSHBUTTON_1_PIO, PIN_PUSHBUTTON_1_MASK, 10);
+	pio_set_debounce_filter(PIN_PUSHBUTTON_1_PIO, PIN_PUSHBUTTON_1_MASK, 20);
 	pio_handler_set(PIN_PUSHBUTTON_1_PIO, PIN_PUSHBUTTON_1_ID,
 					PIN_PUSHBUTTON_1_MASK, PIN_PUSHBUTTON_1_ATTR, button_handler);
 	NVIC_EnableIRQ((IRQn_Type) PIN_PUSHBUTTON_1_ID);
@@ -437,7 +442,7 @@ void hal_io_button_startall_int( void ){
 
 	// Configure Pushbutton 2
 	pmc_enable_periph_clk(PIN_PUSHBUTTON_2_ID);
-	pio_set_debounce_filter(PIN_PUSHBUTTON_2_PIO, PIN_PUSHBUTTON_2_MASK, 10);
+	pio_set_debounce_filter(PIN_PUSHBUTTON_2_PIO, PIN_PUSHBUTTON_2_MASK, 20);
 	pio_handler_set(PIN_PUSHBUTTON_2_PIO, PIN_PUSHBUTTON_2_ID,
 					PIN_PUSHBUTTON_2_MASK, PIN_PUSHBUTTON_2_ATTR, button_handler);
 	NVIC_EnableIRQ((IRQn_Type) PIN_PUSHBUTTON_2_ID);
@@ -446,7 +451,7 @@ void hal_io_button_startall_int( void ){
 
 	// Configure Pushbutton 3
 	pmc_enable_periph_clk(PIN_PUSHBUTTON_3_ID);
-	pio_set_debounce_filter(PIN_PUSHBUTTON_3_PIO, PIN_PUSHBUTTON_3_MASK, 10);
+	pio_set_debounce_filter(PIN_PUSHBUTTON_3_PIO, PIN_PUSHBUTTON_3_MASK, 20);
 	pio_handler_set(PIN_PUSHBUTTON_3_PIO, PIN_PUSHBUTTON_3_ID,
 					PIN_PUSHBUTTON_3_MASK, PIN_PUSHBUTTON_3_ATTR, button_handler);
 	NVIC_EnableIRQ((IRQn_Type) PIN_PUSHBUTTON_3_ID);
@@ -457,13 +462,13 @@ void hal_io_button_startall_int( void ){
 /**
 *	Button Read
 *
-*	Reads a button
+*	Reads the last button pushed
 *
 *	@param Button number to be read
 *
-*   @return The state of the button
+*   @return last button pushed
 */
-tButtonNum hal_io_button_read( tButtonNum button_num ){
+tButtonNum hal_io_button_read( void ){
 	
 	tButtonNum b = button_pressed;
 	button_pressed = NoButton;
@@ -666,3 +671,537 @@ void USART1_Handler(){
 		usart1_callback(received_byte);
 	}
 }
+	
+	//draw graph
+	// Adapted from
+	// https://www.allaboutcircuits.com/projects/how-to-create-a-gaming-system-with-the-atmel-sam4s-xplained-pro/
+	// by Robert Keim, Accessed on Nov. 22nd, 2018
+
+	void set_pixel(unsigned char row, unsigned char column){
+		if (row < 8)
+		{
+			OLED_Pixels[0][column] |= (0x01 << row);
+		}
+		
+		else if (row < 16)
+		{
+			OLED_Pixels[1][column] |= (0x01 << (row - 8));
+		}
+		
+		else if (row < 24)
+		{
+			OLED_Pixels[2][column] |= (0x01 << (row - 16));
+		}
+		
+		else if (row < 32)
+		{
+			OLED_Pixels[3][column] |= (0x01 << (row - 24));
+		}
+		
+	}
+
+	void clear_pixel(unsigned char row, unsigned char column){
+		if (row < 8)
+		{
+			OLED_Pixels[0][column] &= ~(0x01 << row);
+		}
+		
+		else if (row < 16)
+		{
+			OLED_Pixels[1][column] &= ~(0x01 << (row - 8));
+		}
+		
+		else if (row < 24)
+		{
+			OLED_Pixels[2][column] &= ~(0x01 << (row - 16));
+		}
+		
+		else if (row < 32)
+		{
+			OLED_Pixels[3][column] &= ~(0x01 << (row - 24));
+		}
+	}
+
+	void clear_array(void){
+		unsigned char x, y;
+		
+		for (x = 0; x < OLED_HEIGHT_BYTES; x++)
+		{
+			for (y = 0; y < OLED_WIDTH_PIXELS; y++)
+			{
+				OLED_Pixels[x][y] = 0;
+			}
+		}
+	}
+
+	//display the array of pixels on screen
+	void update_display(int page){
+		unsigned char Row, Column;
+		
+		ssd1306_set_page_address(page);
+		ssd1306_set_column_address(0);
+		
+		for (Row = 0; Row < OLED_HEIGHT_BYTES; Row++)
+		{
+			for (Column = 0; Column < OLED_WIDTH_PIXELS; Column++)
+			{
+				ssd1306_write_data(OLED_Pixels[Row][Column]);
+			}
+		}
+	}
+
+	// take a new array
+	void show_full_screen(tBreed breed){
+		if (breed == Crab)
+		{
+			crab();
+		}
+		else if (breed == Unicorn)
+		{
+			unicorn();
+		}
+		
+		
+	}
+	//pet graphs
+	void unicorn(){
+		//tree
+		set_pixel(0,3);set_pixel(0+1,3+6);set_pixel(0,3+12);set_pixel(0+1,3+6+12);
+		set_pixel(1,3);set_pixel(1+1,3+6);set_pixel(1,3+12);set_pixel(1+1,3+6+12);
+		set_pixel(2,3);set_pixel(2+1,3+6);set_pixel(2,3+12);set_pixel(2+1,3+6+12);
+		set_pixel(3,3);set_pixel(3+1,3+6);set_pixel(3,3+12);set_pixel(3+1,3+6+12);
+		set_pixel(4,3);set_pixel(4+1,3+6);set_pixel(4,3+12);set_pixel(4+1,3+6+12);
+		set_pixel(5,3);set_pixel(5+1,3+6);set_pixel(5,3+12);set_pixel(5+1,3+6+12);
+		set_pixel(6,3);set_pixel(6+1,3+6);set_pixel(6,3+12);set_pixel(6+1,3+6+12);
+		set_pixel(7,3);//set_pixel(7,3+6);set_pixel(7,3);//set_pixel(7,3+6);
+		set_pixel(1,2);set_pixel(1+1,2+6);set_pixel(1,2+12);set_pixel(1+1,2+6+12);
+		set_pixel(1,3);set_pixel(1+1,3+6);set_pixel(1,3+12);set_pixel(1+1,3+6+12);
+		set_pixel(1,4);set_pixel(1+1,4+6);set_pixel(1,4+12);set_pixel(1+1,4+6+12);
+		set_pixel(2,4);set_pixel(2+1,4+6);set_pixel(2,4+12);set_pixel(2+1,4+6+12);
+		set_pixel(2,5);set_pixel(2+1,5+6);set_pixel(2,5+12);set_pixel(2+1,5+6+12);
+		set_pixel(4,2);set_pixel(4+1,2+6);set_pixel(4,2+12);set_pixel(4+1,2+6+12);
+		set_pixel(4,4);set_pixel(4+1,4+6);set_pixel(4,4+12);set_pixel(4+1,4+6+12);
+		set_pixel(5,1);set_pixel(5+1,1+6);set_pixel(5,1+12);set_pixel(5+1,1+6+12);
+		set_pixel(5,2);set_pixel(5+1,2+6);set_pixel(5,2+12);set_pixel(5+1,2+6+12);
+		set_pixel(5,4);set_pixel(5+1,4+6);set_pixel(5,4+12);set_pixel(5+1,4+6+12);
+		set_pixel(5,5);set_pixel(5+1,5+6);set_pixel(5,5+12);set_pixel(5+1,5+6+12);
+		set_pixel(6,0);set_pixel(6+1,0+6);set_pixel(6,0+12);set_pixel(6+1,0+6+12);
+		set_pixel(6,1);set_pixel(6+1,1+6);set_pixel(6,1+12);set_pixel(6+1,1+6+12);
+		set_pixel(6,2);set_pixel(6+1,2+6);set_pixel(6,2+12);set_pixel(6+1,2+6+12);
+		set_pixel(6,4);set_pixel(6+1,4+6);set_pixel(6,4+12);set_pixel(6+1,4+6+12);
+		set_pixel(6,5);set_pixel(6+1,5+6);set_pixel(6,5+12);set_pixel(6+1,5+6+12);
+		set_pixel(6,6);set_pixel(6+1,6+6);set_pixel(6,6+12);set_pixel(6+1,6+6+12);
+		
+		//unicorn
+		set_pixel(TargetRow+0,TargetColumn+24);
+		set_pixel(TargetRow+0,TargetColumn+25);
+		set_pixel(TargetRow+1,TargetColumn+18);
+		set_pixel(TargetRow+1,TargetColumn+23);
+		set_pixel(TargetRow+1,TargetColumn+25);
+		set_pixel(TargetRow+2,TargetColumn+17);
+		set_pixel(TargetRow+2,TargetColumn+19);
+		set_pixel(TargetRow+2,TargetColumn+22);
+		set_pixel(TargetRow+2,TargetColumn+25);
+		
+		set_pixel(TargetRow+3,TargetColumn+16);
+		set_pixel(TargetRow+3,TargetColumn+19);
+		set_pixel(TargetRow+3,TargetColumn+21);
+		set_pixel(TargetRow+3,TargetColumn+24);
+		set_pixel(TargetRow+3,TargetColumn+25);
+		set_pixel(TargetRow+3,TargetColumn+26);
+		set_pixel(TargetRow+3,TargetColumn+27);
+		set_pixel(TargetRow+4,TargetColumn+16);
+		set_pixel(TargetRow+4,TargetColumn+20);
+		set_pixel(TargetRow+4,TargetColumn+24);
+		set_pixel(TargetRow+4,TargetColumn+27);
+		set_pixel(TargetRow+5,TargetColumn+16);
+		set_pixel(TargetRow+5,TargetColumn+24);
+		set_pixel(TargetRow+5,TargetColumn+26);
+		set_pixel(TargetRow+6,TargetColumn+3);
+		set_pixel(TargetRow+6,TargetColumn+4);
+		set_pixel(TargetRow+6,TargetColumn+5);
+		set_pixel(TargetRow+6,TargetColumn+15);
+		set_pixel(TargetRow+6,TargetColumn+17);
+		set_pixel(TargetRow+6,TargetColumn+25);
+		
+		set_pixel(TargetRow+7,TargetColumn+2);
+		set_pixel(TargetRow+7,TargetColumn+6);
+		set_pixel(TargetRow+7,TargetColumn+14);
+		set_pixel(TargetRow+7,TargetColumn+19);
+		set_pixel(TargetRow+7,TargetColumn+20);
+		set_pixel(TargetRow+7,TargetColumn+25);
+		
+		update_display(0);
+		clear_array();
+		//tree on page 2
+		set_pixel(0,3);set_pixel(0+1,3+6);set_pixel(0,3+12);set_pixel(0+1,3+6+12);
+		set_pixel(1,3);set_pixel(1+1,3+6);set_pixel(1,3+12);set_pixel(1+1,3+6+12);
+		set_pixel(2,3);set_pixel(2+1,3+6);set_pixel(2,3+12);set_pixel(2+1,3+6+12);
+		set_pixel(3,3);set_pixel(3+1,3+6);set_pixel(3,3+12);set_pixel(3+1,3+6+12);
+		set_pixel(4,3);set_pixel(4+1,3+6);set_pixel(4,3+12);set_pixel(4+1,3+6+12);
+		set_pixel(5,3);set_pixel(5+1,3+6);set_pixel(5,3+12);set_pixel(5+1,3+6+12);
+		
+		
+		set_pixel(TargetRow+0, TargetColumn+1);
+		set_pixel(TargetRow+0, TargetColumn+7);
+		set_pixel(TargetRow+0, TargetColumn+12);
+		set_pixel(TargetRow+0, TargetColumn+13);
+		set_pixel(TargetRow+0, TargetColumn+17);
+		set_pixel(TargetRow+0, TargetColumn+19);
+		set_pixel(TargetRow+0, TargetColumn+20);
+		set_pixel(TargetRow+0, TargetColumn+26);
+		
+		set_pixel(TargetRow+1, TargetColumn+1);
+		set_pixel(TargetRow+1, TargetColumn+7);
+		set_pixel(TargetRow+1, TargetColumn+8);
+		set_pixel(TargetRow+1, TargetColumn+9);
+		set_pixel(TargetRow+1, TargetColumn+10);
+		set_pixel(TargetRow+1, TargetColumn+11);
+		set_pixel(TargetRow+1, TargetColumn+16);
+		set_pixel(TargetRow+1, TargetColumn+27);
+		set_pixel(TargetRow+2, TargetColumn+1);
+		set_pixel(TargetRow+2, TargetColumn+6);
+		set_pixel(TargetRow+2, TargetColumn+10);
+		set_pixel(TargetRow+2, TargetColumn+16);
+		set_pixel(TargetRow+2, TargetColumn+27);
+		set_pixel(TargetRow+3, TargetColumn+1);
+		set_pixel(TargetRow+3, TargetColumn+5);
+		set_pixel(TargetRow+3, TargetColumn+10);
+		set_pixel(TargetRow+3, TargetColumn+16);
+		set_pixel(TargetRow+3, TargetColumn+27);
+		set_pixel(TargetRow+4, TargetColumn+1);
+		set_pixel(TargetRow+4, TargetColumn+5);
+		set_pixel(TargetRow+4, TargetColumn+10);
+		set_pixel(TargetRow+4, TargetColumn+15);
+		set_pixel(TargetRow+4, TargetColumn+27);
+		set_pixel(TargetRow+5, TargetColumn+1);
+		set_pixel(TargetRow+5, TargetColumn+4);
+		set_pixel(TargetRow+5, TargetColumn+10);
+		set_pixel(TargetRow+5, TargetColumn+15);
+		set_pixel(TargetRow+5, TargetColumn+26);
+		set_pixel(TargetRow+5, TargetColumn+27);
+		set_pixel(TargetRow+6, TargetColumn+1);
+		set_pixel(TargetRow+6, TargetColumn+4);
+		set_pixel(TargetRow+6, TargetColumn+10);
+		set_pixel(TargetRow+6, TargetColumn+12);
+		set_pixel(TargetRow+6, TargetColumn+14);
+		set_pixel(TargetRow+6, TargetColumn+22);
+		set_pixel(TargetRow+6, TargetColumn+23);
+		set_pixel(TargetRow+6, TargetColumn+24);
+		set_pixel(TargetRow+6, TargetColumn+25);
+		set_pixel(TargetRow+7, TargetColumn+0);
+		set_pixel(TargetRow+7, TargetColumn+1);
+		set_pixel(TargetRow+7, TargetColumn+4);
+		set_pixel(TargetRow+7, TargetColumn+21);
+		
+		
+		update_display(1);
+		clear_array();
+		
+		set_pixel(TargetRow+0, TargetColumn+1);
+		set_pixel(TargetRow+0, TargetColumn+4);
+		set_pixel(TargetRow+0, TargetColumn+21);
+		set_pixel(TargetRow+1, TargetColumn+4);
+		set_pixel(TargetRow+1, TargetColumn+20);
+		set_pixel(TargetRow+2, TargetColumn+4);
+		set_pixel(TargetRow+2, TargetColumn+20);
+		set_pixel(TargetRow+3, TargetColumn+0);
+		set_pixel(TargetRow+3, TargetColumn+3);
+		set_pixel(TargetRow+3, TargetColumn+4);
+		set_pixel(TargetRow+3, TargetColumn+11);
+		set_pixel(TargetRow+3, TargetColumn+12);
+		set_pixel(TargetRow+3, TargetColumn+13);
+		set_pixel(TargetRow+3, TargetColumn+14);
+		set_pixel(TargetRow+3, TargetColumn+20);
+		set_pixel(TargetRow+4, TargetColumn+1);
+		set_pixel(TargetRow+4, TargetColumn+2);
+		set_pixel(TargetRow+4, TargetColumn+4);
+		set_pixel(TargetRow+4, TargetColumn+10);
+		set_pixel(TargetRow+4, TargetColumn+13);
+		set_pixel(TargetRow+4, TargetColumn+15);
+		set_pixel(TargetRow+4, TargetColumn+18);
+		set_pixel(TargetRow+4, TargetColumn+20);
+		set_pixel(TargetRow+5, TargetColumn+4);
+		set_pixel(TargetRow+5, TargetColumn+8);
+		set_pixel(TargetRow+5, TargetColumn+9);
+		set_pixel(TargetRow+5, TargetColumn+12);
+		set_pixel(TargetRow+5, TargetColumn+15);
+		set_pixel(TargetRow+5, TargetColumn+18);
+		set_pixel(TargetRow+5, TargetColumn+20);
+		set_pixel(TargetRow+6, TargetColumn+5);
+		set_pixel(TargetRow+6, TargetColumn+8);
+		set_pixel(TargetRow+6, TargetColumn+10);
+		set_pixel(TargetRow+6, TargetColumn+12);
+		set_pixel(TargetRow+6, TargetColumn+13);
+		set_pixel(TargetRow+6, TargetColumn+15);
+		set_pixel(TargetRow+6, TargetColumn+18);
+		set_pixel(TargetRow+6, TargetColumn+20);
+		set_pixel(TargetRow+7, TargetColumn+5);
+		set_pixel(TargetRow+7, TargetColumn+8);
+		set_pixel(TargetRow+7, TargetColumn+10);
+		set_pixel(TargetRow+7, TargetColumn+13);
+		set_pixel(TargetRow+7, TargetColumn+15);
+		set_pixel(TargetRow+7, TargetColumn+18);
+		set_pixel(TargetRow+7, TargetColumn+20);
+		
+		update_display(2);
+		clear_array();
+		
+		set_pixel(TargetRow+0, TargetColumn+5);
+		set_pixel(TargetRow+0, TargetColumn+6);
+		set_pixel(TargetRow+0, TargetColumn+7);
+		set_pixel(TargetRow+0, TargetColumn+8);
+		set_pixel(TargetRow+0, TargetColumn+10);
+		set_pixel(TargetRow+0, TargetColumn+11);
+		set_pixel(TargetRow+0, TargetColumn+12);
+		set_pixel(TargetRow+0, TargetColumn+13);
+		set_pixel(TargetRow+0, TargetColumn+15);
+		set_pixel(TargetRow+0, TargetColumn+16);
+		set_pixel(TargetRow+0, TargetColumn+17);
+		set_pixel(TargetRow+0, TargetColumn+18);
+		set_pixel(TargetRow+0, TargetColumn+20);
+		
+		update_display(3);
+		clear_array();
+		if (flag)
+		{
+			TargetColumn++;
+			}else{
+			
+			TargetColumn--;
+		}
+		
+		if ( (TargetColumn+1) == (OLED_WIDTH_PIXELS-50))
+		{
+			
+			flag=false;
+		}
+		else if ((TargetColumn-30)==0)
+		{
+			flag=true;
+		}
+	}
+
+	void crab(){
+		
+		set_pixel(TargetRow+3,TargetColumn+6);
+		set_pixel(TargetRow+3,TargetColumn+20);
+		set_pixel(TargetRow+4,TargetColumn+5);
+		set_pixel(TargetRow+4,TargetColumn+4);
+		set_pixel(TargetRow+4,TargetColumn+6);
+		set_pixel(TargetRow+4,TargetColumn+20);
+		set_pixel(TargetRow+4,TargetColumn+21);
+		set_pixel(TargetRow+4,TargetColumn+22);
+		set_pixel(TargetRow+5,TargetColumn+4);
+		set_pixel(TargetRow+5,TargetColumn+5);
+		set_pixel(TargetRow+5,TargetColumn+6);
+		set_pixel(TargetRow+5,TargetColumn+20);
+		set_pixel(TargetRow+5,TargetColumn+21);
+		set_pixel(TargetRow+5,TargetColumn+22);
+		set_pixel(TargetRow+6,TargetColumn+4);
+		set_pixel(TargetRow+6,TargetColumn+5);
+		set_pixel(TargetRow+6,TargetColumn+6);
+		set_pixel(TargetRow+6,TargetColumn+9);
+		set_pixel(TargetRow+6,TargetColumn+17);
+		set_pixel(TargetRow+6,TargetColumn+20);
+		set_pixel(TargetRow+6,TargetColumn+21);
+		set_pixel(TargetRow+6,TargetColumn+22);
+		set_pixel(TargetRow+7,TargetColumn+4);
+		set_pixel(TargetRow+7,TargetColumn+5);
+		set_pixel(TargetRow+7,TargetColumn+6);
+		set_pixel(TargetRow+7,TargetColumn+8);
+		set_pixel(TargetRow+7,TargetColumn+9);
+		set_pixel(TargetRow+7,TargetColumn+17);
+		set_pixel(TargetRow+7,TargetColumn+18);
+		set_pixel(TargetRow+7,TargetColumn+20);
+		set_pixel(TargetRow+7,TargetColumn+21);
+		set_pixel(TargetRow+7,TargetColumn+22);
+		set_pixel(TargetRow+7,TargetColumn+23);
+		
+		
+		update_display(0);
+		clear_array();
+		
+		set_pixel(TargetRow+0,TargetColumn+4);
+		set_pixel(TargetRow+0,TargetColumn+5);
+		set_pixel(TargetRow+0,TargetColumn+6);
+		set_pixel(TargetRow+0,TargetColumn+8);
+		set_pixel(TargetRow+0,TargetColumn+9);
+		set_pixel(TargetRow+0,TargetColumn+11);
+		set_pixel(TargetRow+0,TargetColumn+14);
+		set_pixel(TargetRow+0,TargetColumn+12);
+		set_pixel(TargetRow+0,TargetColumn+15);
+		set_pixel(TargetRow+0,TargetColumn+17);
+		set_pixel(TargetRow+0,TargetColumn+18);
+		set_pixel(TargetRow+0,TargetColumn+20);
+		set_pixel(TargetRow+0,TargetColumn+21);
+		set_pixel(TargetRow+0,TargetColumn+22);
+		set_pixel(TargetRow+1,TargetColumn+5);
+		set_pixel(TargetRow+1,TargetColumn+6);
+		set_pixel(TargetRow+1,TargetColumn+7);
+		set_pixel(TargetRow+1,TargetColumn+8);
+		set_pixel(TargetRow+1,TargetColumn+11);
+		set_pixel(TargetRow+1,TargetColumn+12);
+		set_pixel(TargetRow+1,TargetColumn+14);
+		set_pixel(TargetRow+1,TargetColumn+15);
+		set_pixel(TargetRow+1,TargetColumn+18);
+		set_pixel(TargetRow+1,TargetColumn+19);
+		set_pixel(TargetRow+1,TargetColumn+20);
+		set_pixel(TargetRow+1,TargetColumn+21);
+		set_pixel(TargetRow+2,TargetColumn+6);
+		set_pixel(TargetRow+2,TargetColumn+7);
+		set_pixel(TargetRow+2,TargetColumn+10);
+		set_pixel(TargetRow+2,TargetColumn+11);
+		set_pixel(TargetRow+2,TargetColumn+12);
+		set_pixel(TargetRow+2,TargetColumn+13);
+		set_pixel(TargetRow+2,TargetColumn+14);
+		set_pixel(TargetRow+2,TargetColumn+15);
+		set_pixel(TargetRow+2,TargetColumn+16);
+		set_pixel(TargetRow+2,TargetColumn+19);
+		set_pixel(TargetRow+2,TargetColumn+20);
+		set_pixel(TargetRow+3,TargetColumn+7);
+		set_pixel(TargetRow+3,TargetColumn+8);
+		set_pixel(TargetRow+3,TargetColumn+9);
+		set_pixel(TargetRow+3,TargetColumn+10);
+		set_pixel(TargetRow+3,TargetColumn+11);
+		set_pixel(TargetRow+3,TargetColumn+12);
+		set_pixel(TargetRow+3,TargetColumn+13);
+		set_pixel(TargetRow+3,TargetColumn+14);
+		set_pixel(TargetRow+3,TargetColumn+15);
+		set_pixel(TargetRow+3,TargetColumn+16);
+		set_pixel(TargetRow+3,TargetColumn+17);
+		set_pixel(TargetRow+3,TargetColumn+18);
+		set_pixel(TargetRow+3,TargetColumn+19);
+		set_pixel(TargetRow+4,TargetColumn+8);
+		set_pixel(TargetRow+4,TargetColumn+9);
+		set_pixel(TargetRow+4,TargetColumn+10);
+		set_pixel(TargetRow+4,TargetColumn+11);
+		set_pixel(TargetRow+4,TargetColumn+12);
+		set_pixel(TargetRow+4,TargetColumn+13);
+		set_pixel(TargetRow+4,TargetColumn+14);
+		set_pixel(TargetRow+4,TargetColumn+15);
+		set_pixel(TargetRow+4,TargetColumn+16);
+		set_pixel(TargetRow+4,TargetColumn+17);
+		set_pixel(TargetRow+4,TargetColumn+18);
+		set_pixel(TargetRow+5,TargetColumn+8);
+		set_pixel(TargetRow+5,TargetColumn+9);
+		set_pixel(TargetRow+5,TargetColumn+10);
+		set_pixel(TargetRow+5,TargetColumn+11);
+		set_pixel(TargetRow+5,TargetColumn+12);
+		set_pixel(TargetRow+5,TargetColumn+13);
+		set_pixel(TargetRow+5,TargetColumn+14);
+		set_pixel(TargetRow+5,TargetColumn+15);
+		set_pixel(TargetRow+5,TargetColumn+16);
+		set_pixel(TargetRow+5,TargetColumn+17);
+		set_pixel(TargetRow+5,TargetColumn+18);
+		set_pixel(TargetRow+5,TargetColumn+7);
+		set_pixel(TargetRow+5,TargetColumn+6);
+		set_pixel(TargetRow+5,TargetColumn+19);
+		set_pixel(TargetRow+5,TargetColumn+20);
+		set_pixel(TargetRow+6,TargetColumn+6);
+		set_pixel(TargetRow+6,TargetColumn+7);
+		set_pixel(TargetRow+6,TargetColumn+8);
+		set_pixel(TargetRow+6,TargetColumn+9);
+		set_pixel(TargetRow+6,TargetColumn+10);
+		set_pixel(TargetRow+6,TargetColumn+11);
+		set_pixel(TargetRow+6,TargetColumn+12);
+		set_pixel(TargetRow+6,TargetColumn+13);
+		set_pixel(TargetRow+6,TargetColumn+14);
+		set_pixel(TargetRow+6,TargetColumn+15);
+		set_pixel(TargetRow+6,TargetColumn+16);
+		set_pixel(TargetRow+6,TargetColumn+17);
+		set_pixel(TargetRow+6,TargetColumn+18);
+		set_pixel(TargetRow+6,TargetColumn+19);
+		set_pixel(TargetRow+6,TargetColumn+20);
+		set_pixel(TargetRow+7,TargetColumn+5);
+		
+		set_pixel(TargetRow+7,TargetColumn+8);
+		set_pixel(TargetRow+7,TargetColumn+9);
+		set_pixel(TargetRow+7,TargetColumn+10);
+		set_pixel(TargetRow+7,TargetColumn+11);
+		set_pixel(TargetRow+7,TargetColumn+12);
+		set_pixel(TargetRow+7,TargetColumn+13);
+		set_pixel(TargetRow+7,TargetColumn+14);
+		set_pixel(TargetRow+7,TargetColumn+15);
+		set_pixel(TargetRow+7,TargetColumn+16);
+		set_pixel(TargetRow+7,TargetColumn+17);
+		set_pixel(TargetRow+7,TargetColumn+18);
+		set_pixel(TargetRow+7,TargetColumn+21);
+		update_display(1);
+		clear_array();
+		set_pixel(TargetRow+0,TargetColumn+6);
+		set_pixel(TargetRow+0,TargetColumn+7);
+		set_pixel(TargetRow+0,TargetColumn+8);
+		set_pixel(TargetRow+0,TargetColumn+9);
+		set_pixel(TargetRow+0,TargetColumn+10);
+		set_pixel(TargetRow+0,TargetColumn+11);
+		set_pixel(TargetRow+0,TargetColumn+12);
+		set_pixel(TargetRow+0,TargetColumn+13);
+		set_pixel(TargetRow+0,TargetColumn+14);
+		set_pixel(TargetRow+0,TargetColumn+15);
+		set_pixel(TargetRow+0,TargetColumn+16);
+		set_pixel(TargetRow+0,TargetColumn+17);
+		set_pixel(TargetRow+0,TargetColumn+18);
+		set_pixel(TargetRow+0,TargetColumn+19);
+		set_pixel(TargetRow+1,TargetColumn+5);
+		set_pixel(TargetRow+1,TargetColumn+6);
+		set_pixel(TargetRow+1,TargetColumn+8);
+		set_pixel(TargetRow+1,TargetColumn+9);
+		set_pixel(TargetRow+1,TargetColumn+10);
+		set_pixel(TargetRow+1,TargetColumn+11);
+		set_pixel(TargetRow+1,TargetColumn+12);
+		set_pixel(TargetRow+1,TargetColumn+13);
+		set_pixel(TargetRow+1,TargetColumn+14);
+		set_pixel(TargetRow+1,TargetColumn+15);
+		set_pixel(TargetRow+1,TargetColumn+16);
+		set_pixel(TargetRow+1,TargetColumn+17);
+		set_pixel(TargetRow+1,TargetColumn+18);
+		set_pixel(TargetRow+1,TargetColumn+20);
+		set_pixel(TargetRow+1,TargetColumn+21);
+		set_pixel(TargetRow+2,TargetColumn+7);
+		set_pixel(TargetRow+2,TargetColumn+8);
+		set_pixel(TargetRow+2,TargetColumn+8);
+		set_pixel(TargetRow+2,TargetColumn+11);
+		set_pixel(TargetRow+2,TargetColumn+12);
+		set_pixel(TargetRow+2,TargetColumn+13);
+		set_pixel(TargetRow+2,TargetColumn+14);
+		set_pixel(TargetRow+2,TargetColumn+15);
+		set_pixel(TargetRow+2,TargetColumn+18);
+		set_pixel(TargetRow+3,TargetColumn+7);
+		set_pixel(TargetRow+3,TargetColumn+10);
+		set_pixel(TargetRow+3,TargetColumn+16);
+		set_pixel(TargetRow+3,TargetColumn+19);
+		set_pixel(TargetRow+4,TargetColumn+7);
+		set_pixel(TargetRow+4,TargetColumn+10);
+		set_pixel(TargetRow+4,TargetColumn+16);
+		set_pixel(TargetRow+4,TargetColumn+19);
+		set_pixel(TargetRow+5,TargetColumn+7);
+		set_pixel(TargetRow+5,TargetColumn+10);
+		set_pixel(TargetRow+5,TargetColumn+16);
+		set_pixel(TargetRow+5,TargetColumn+19);
+		
+		set_pixel(TargetRow+6,TargetColumn+10);
+		set_pixel(TargetRow+6,TargetColumn+16);
+		
+		update_display(2);
+		clear_array();
+		if (flag)
+		{
+			TargetColumn++;
+			}else{
+			
+			TargetColumn--;
+		}
+		
+		if ( (TargetColumn+1) == (OLED_WIDTH_PIXELS-50))
+		{
+			
+			flag=false;
+		}
+		else if ((TargetColumn-30)==0)
+		{
+			flag=true;
+		}
+		
+	}
+	

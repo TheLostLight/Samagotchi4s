@@ -12,6 +12,7 @@
 
 #include <stdint-gcc.h>	//defs for size-specific primitive data types
 #include <stdbool.h>	//defs for true and false
+#include "pet.h"
 
 typedef uint32_t tLedNum;		/**< Led number type */
 typedef bool tLedState;			/**< Led state type */
@@ -37,6 +38,14 @@ enum tPio			{ PioA = 0, PioB, PioC, PioD };
 enum tPioPinDir		{ PioPinDirOutput = 0, PioPinDirInput } ;
 
 #define MEM_FAT_MAX_FNAME_LENGTH	30	/**< max file name size for the FAT file system */
+
+// Adapted from https://www.allaboutcircuits.com/projects/how-to-create-a-gaming-system-with-the-atmel-sam4s-xplained-pro/
+// By Robert Keim, Accessed on Nov. 22nd, 2018
+//Preprocessor definitions
+#define OLED_HEIGHT_BYTES 32/8
+#define OLED_WIDTH_PIXELS 128
+//Global variables
+unsigned char OLED_Pixels[OLED_HEIGHT_BYTES][OLED_WIDTH_PIXELS];
 
 /**
 * Time
@@ -94,6 +103,16 @@ void hal_cpu_init( void );
 void hal_nvmem_init(void);
 void hal_memreg_init( void );
 
+//------------------draw----------------
+//--------------------------------------
+void set_pixel(unsigned char, unsigned char);
+void clear_pixel(unsigned char, unsigned char);
+void clear_array(void);
+void update_display(int);
+void show_full_screen(tBreed);
+void unicorn(void);
+void crab(void);
+
 //  --------------  IO  -----------------
 //  -------------------------------------
 
@@ -144,7 +163,7 @@ void hal_io_clock_read( tTime* );
 //Buttons
 void hal_io_button_startall_int( void );
 void hal_io_button_startall_poll( void );
-tButtonState hal_io_button_read( tButtonNum );
+tButtonNum hal_io_button_read( void );
 
 //Serial
 void hal_io_serial_start_poll( tSerialId, uint32_t );

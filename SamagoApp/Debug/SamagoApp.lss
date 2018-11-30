@@ -1,0 +1,1903 @@
+
+SamagoApp.elf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000d9c  20014000  20014000  00004000  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .relocate     00000454  20014da0  20014d9c  00004da0  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          0000005c  200151f4  200151f0  000051f4  2**2
+                  ALLOC
+  3 .stack        00000400  20015250  2001524c  000051f4  2**0
+                  ALLOC
+  4 .heap         00000200  20015650  2001564c  000051f4  2**0
+                  ALLOC
+  5 .ARM.attributes 0000002a  00000000  00000000  000051f4  2**0
+                  CONTENTS, READONLY
+  6 .comment      00000059  00000000  00000000  0000521e  2**0
+                  CONTENTS, READONLY
+  7 .debug_info   00001263  00000000  00000000  00005277  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_abbrev 000002a3  00000000  00000000  000064da  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_loc    0000064c  00000000  00000000  0000677d  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_aranges 00000098  00000000  00000000  00006dd0  2**3
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_ranges 000000b0  00000000  00000000  00006e68  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_macro  00000ced  00000000  00000000  00006f18  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 13 .debug_line   000003c7  00000000  00000000  00007c05  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 14 .debug_str    00003296  00000000  00000000  00007fcc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 15 .debug_frame  00000334  00000000  00000000  0000b264  2**2
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+20014000 <sp>:
+20014000:	50 56 01 20                                         PV. 
+
+20014004 <main>:
+STACKINFO sp  = &_estack;
+
+tButtonNum volatile selection = NoButton;
+pet user_pet = {0, 0, 0, 0, 0, 0};
+
+MINIOSAPP main(void){
+20014004:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+20014008:	b082      	sub	sp, #8
+	
+	update_stats(&user_pet);
+2001400a:	4880      	ldr	r0, [pc, #512]	; (2001420c <main+0x208>)
+2001400c:	4b80      	ldr	r3, [pc, #512]	; (20014210 <main+0x20c>)
+2001400e:	4798      	blx	r3
+	
+	bool new;
+	
+	is_new_file(&new);
+20014010:	f10d 0007 	add.w	r0, sp, #7
+20014014:	4b7f      	ldr	r3, [pc, #508]	; (20014214 <main+0x210>)
+20014016:	4798      	blx	r3
+	
+	if(new)
+20014018:	f89d 3007 	ldrb.w	r3, [sp, #7]
+2001401c:	2b00      	cmp	r3, #0
+2001401e:	f000 809a 	beq.w	20014156 <main+0x152>
+	{
+		 display_gotoxy(0, 0);
+20014022:	2100      	movs	r1, #0
+20014024:	4608      	mov	r0, r1
+20014026:	4d7c      	ldr	r5, [pc, #496]	; (20014218 <main+0x214>)
+20014028:	47a8      	blx	r5
+		 display_puts("A new pet has been born!");
+2001402a:	487c      	ldr	r0, [pc, #496]	; (2001421c <main+0x218>)
+2001402c:	4c7c      	ldr	r4, [pc, #496]	; (20014220 <main+0x21c>)
+2001402e:	47a0      	blx	r4
+		 display_gotoxy(0, 2);
+20014030:	2102      	movs	r1, #2
+20014032:	2000      	movs	r0, #0
+20014034:	47a8      	blx	r5
+		 display_puts("Please enter a name");
+20014036:	487b      	ldr	r0, [pc, #492]	; (20014224 <main+0x220>)
+20014038:	47a0      	blx	r4
+		 display_gotoxy(0, 3);
+2001403a:	2103      	movs	r1, #3
+2001403c:	2000      	movs	r0, #0
+2001403e:	47a8      	blx	r5
+		 display_puts("for your new pet:");
+20014040:	4879      	ldr	r0, [pc, #484]	; (20014228 <main+0x224>)
+20014042:	47a0      	blx	r4
+		 
+		 delay_ms(3000);
+20014044:	f640 30b8 	movw	r0, #3000	; 0xbb8
+20014048:	4b78      	ldr	r3, [pc, #480]	; (2001422c <main+0x228>)
+2001404a:	4798      	blx	r3
+		 display_cls();
+2001404c:	4b78      	ldr	r3, [pc, #480]	; (20014230 <main+0x22c>)
+2001404e:	4798      	blx	r3
+		 
+		 while(!make_name()) display_cls();
+20014050:	4d78      	ldr	r5, [pc, #480]	; (20014234 <main+0x230>)
+20014052:	4c77      	ldr	r4, [pc, #476]	; (20014230 <main+0x22c>)
+20014054:	47a8      	blx	r5
+20014056:	2800      	cmp	r0, #0
+20014058:	d033      	beq.n	200140c2 <main+0xbe>
+		 
+		 display_cls();
+2001405a:	4f75      	ldr	r7, [pc, #468]	; (20014230 <main+0x22c>)
+2001405c:	47b8      	blx	r7
+		 //set_name(&user_pet.name);
+		 
+		 display_gotoxy(0, 0);
+2001405e:	2100      	movs	r1, #0
+20014060:	4608      	mov	r0, r1
+20014062:	4c6d      	ldr	r4, [pc, #436]	; (20014218 <main+0x214>)
+20014064:	47a0      	blx	r4
+		 display_printf("Congratulations!");
+20014066:	4874      	ldr	r0, [pc, #464]	; (20014238 <main+0x234>)
+20014068:	4d74      	ldr	r5, [pc, #464]	; (2001423c <main+0x238>)
+2001406a:	47a8      	blx	r5
+		 display_gotoxy(0, 1);
+2001406c:	2101      	movs	r1, #1
+2001406e:	2000      	movs	r0, #0
+20014070:	47a0      	blx	r4
+		 display_printf("have named your pet:");
+20014072:	4873      	ldr	r0, [pc, #460]	; (20014240 <main+0x23c>)
+20014074:	47a8      	blx	r5
+		 display_gotoxy(0, 2);
+20014076:	2102      	movs	r1, #2
+20014078:	2000      	movs	r0, #0
+2001407a:	47a0      	blx	r4
+		 display_printf("%s", user_pet.name);
+2001407c:	4e71      	ldr	r6, [pc, #452]	; (20014244 <main+0x240>)
+2001407e:	4631      	mov	r1, r6
+20014080:	4871      	ldr	r0, [pc, #452]	; (20014248 <main+0x244>)
+20014082:	47a8      	blx	r5
+		 delay_ms(2500);
+20014084:	f640 10c4 	movw	r0, #2500	; 0x9c4
+20014088:	4b68      	ldr	r3, [pc, #416]	; (2001422c <main+0x228>)
+2001408a:	4798      	blx	r3
+		 display_cls();
+2001408c:	47b8      	blx	r7
+		 display_gotoxy(0, 0);
+2001408e:	2100      	movs	r1, #0
+20014090:	4608      	mov	r0, r1
+20014092:	47a0      	blx	r4
+		 display_printf("What breed is %s", user_pet.name);
+20014094:	4631      	mov	r1, r6
+20014096:	486d      	ldr	r0, [pc, #436]	; (2001424c <main+0x248>)
+20014098:	47a8      	blx	r5
+		 display_gotoxy(0, 3);
+2001409a:	2103      	movs	r1, #3
+2001409c:	2000      	movs	r0, #0
+2001409e:	47a0      	blx	r4
+		 
+		 button_read(&selection); //clear buffer
+200140a0:	4c6b      	ldr	r4, [pc, #428]	; (20014250 <main+0x24c>)
+200140a2:	1d20      	adds	r0, r4, #4
+200140a4:	4b6b      	ldr	r3, [pc, #428]	; (20014254 <main+0x250>)
+200140a6:	4798      	blx	r3
+		 selection = NoButton;
+200140a8:	f04f 33ff 	mov.w	r3, #4294967295
+200140ac:	6063      	str	r3, [r4, #4]
+		 int pos = 0;
+		 display_puts(breed_choices[pos]);
+200140ae:	68a0      	ldr	r0, [r4, #8]
+200140b0:	4b5b      	ldr	r3, [pc, #364]	; (20014220 <main+0x21c>)
+200140b2:	4798      	blx	r3
+		 int pos = 0;
+200140b4:	2400      	movs	r4, #0
+		 
+		 while(selection != Button2)
+200140b6:	4d66      	ldr	r5, [pc, #408]	; (20014250 <main+0x24c>)
+		 {
+			 button_read(&selection);
+200140b8:	f8df 8198 	ldr.w	r8, [pc, #408]	; 20014254 <main+0x250>
+200140bc:	1d2f      	adds	r7, r5, #4
+			 
+			 switch(selection)
+			 {
+				case Button1: if(pos > 0) pos--; else pos = BREED_NUM; display_clr_line(3); display_puts(breed_choices[pos]);
+200140be:	4e66      	ldr	r6, [pc, #408]	; (20014258 <main+0x254>)
+		 while(selection != Button2)
+200140c0:	e008      	b.n	200140d4 <main+0xd0>
+		 while(!make_name()) display_cls();
+200140c2:	47a0      	blx	r4
+200140c4:	e7c6      	b.n	20014054 <main+0x50>
+			 button_read(&selection);
+200140c6:	4638      	mov	r0, r7
+200140c8:	47c0      	blx	r8
+			 switch(selection)
+200140ca:	686b      	ldr	r3, [r5, #4]
+200140cc:	2b01      	cmp	r3, #1
+200140ce:	d029      	beq.n	20014124 <main+0x120>
+200140d0:	2b03      	cmp	r3, #3
+200140d2:	d033      	beq.n	2001413c <main+0x138>
+		 while(selection != Button2)
+200140d4:	686b      	ldr	r3, [r5, #4]
+200140d6:	2b02      	cmp	r3, #2
+200140d8:	d1f5      	bne.n	200140c6 <main+0xc2>
+				case Button3: pos = (pos+1)%BREED_NUM; display_clr_line(3); display_puts(breed_choices[pos]);
+				default: break; 
+			 }
+		 }
+		 
+		 user_pet.breed = pos;
+200140da:	4d4c      	ldr	r5, [pc, #304]	; (2001420c <main+0x208>)
+200140dc:	61ac      	str	r4, [r5, #24]
+		 display_clr_line(3);
+200140de:	2003      	movs	r0, #3
+200140e0:	4b5d      	ldr	r3, [pc, #372]	; (20014258 <main+0x254>)
+200140e2:	4798      	blx	r3
+		 display_printf("%s is a %s.", user_pet.name, breed_choices[pos]);
+200140e4:	4b5a      	ldr	r3, [pc, #360]	; (20014250 <main+0x24c>)
+200140e6:	eb03 0484 	add.w	r4, r3, r4, lsl #2
+200140ea:	68a2      	ldr	r2, [r4, #8]
+200140ec:	f105 0110 	add.w	r1, r5, #16
+200140f0:	485a      	ldr	r0, [pc, #360]	; (2001425c <main+0x258>)
+200140f2:	4b52      	ldr	r3, [pc, #328]	; (2001423c <main+0x238>)
+200140f4:	4798      	blx	r3
+		 delay_ms(2500);
+200140f6:	f640 10c4 	movw	r0, #2500	; 0x9c4
+200140fa:	4b4c      	ldr	r3, [pc, #304]	; (2001422c <main+0x228>)
+200140fc:	4798      	blx	r3
+		 display_cls();
+200140fe:	4b4c      	ldr	r3, [pc, #304]	; (20014230 <main+0x22c>)
+20014100:	4798      	blx	r3
+		 draw(user_pet.breed, 100);
+20014102:	2164      	movs	r1, #100	; 0x64
+20014104:	69a8      	ldr	r0, [r5, #24]
+20014106:	4b56      	ldr	r3, [pc, #344]	; (20014260 <main+0x25c>)
+20014108:	4798      	blx	r3
+		display_cls();
+		draw(user_pet.breed, 100);
+	}
+	
+	int menuc = 0;
+	button_read(&selection); //Clear buffer
+2001410a:	4856      	ldr	r0, [pc, #344]	; (20014264 <main+0x260>)
+2001410c:	4b51      	ldr	r3, [pc, #324]	; (20014254 <main+0x250>)
+2001410e:	4798      	blx	r3
+	print_menu_header();
+20014110:	4b55      	ldr	r3, [pc, #340]	; (20014268 <main+0x264>)
+20014112:	4798      	blx	r3
+	start_time();
+20014114:	4b55      	ldr	r3, [pc, #340]	; (2001426c <main+0x268>)
+20014116:	4798      	blx	r3
+	int menuc = 0;
+20014118:	2700      	movs	r7, #0
+
+	while(true)
+	{
+		display_puts(main_menu[menuc]);
+2001411a:	4c4d      	ldr	r4, [pc, #308]	; (20014250 <main+0x24c>)
+2001411c:	f8df 8100 	ldr.w	r8, [pc, #256]	; 20014220 <main+0x21c>
+		button_read(&selection);
+20014120:	1d25      	adds	r5, r4, #4
+20014122:	e040      	b.n	200141a6 <main+0x1a2>
+				case Button1: if(pos > 0) pos--; else pos = BREED_NUM; display_clr_line(3); display_puts(breed_choices[pos]);
+20014124:	2c00      	cmp	r4, #0
+20014126:	bfcc      	ite	gt
+20014128:	f104 34ff 	addgt.w	r4, r4, #4294967295
+2001412c:	2402      	movle	r4, #2
+2001412e:	2003      	movs	r0, #3
+20014130:	47b0      	blx	r6
+20014132:	eb05 0384 	add.w	r3, r5, r4, lsl #2
+20014136:	6898      	ldr	r0, [r3, #8]
+20014138:	4b39      	ldr	r3, [pc, #228]	; (20014220 <main+0x21c>)
+2001413a:	4798      	blx	r3
+				case Button3: pos = (pos+1)%BREED_NUM; display_clr_line(3); display_puts(breed_choices[pos]);
+2001413c:	3401      	adds	r4, #1
+2001413e:	f004 0401 	and.w	r4, r4, #1
+20014142:	bf48      	it	mi
+20014144:	4264      	negmi	r4, r4
+20014146:	2003      	movs	r0, #3
+20014148:	47b0      	blx	r6
+2001414a:	eb05 0384 	add.w	r3, r5, r4, lsl #2
+2001414e:	6898      	ldr	r0, [r3, #8]
+20014150:	4b33      	ldr	r3, [pc, #204]	; (20014220 <main+0x21c>)
+20014152:	4798      	blx	r3
+20014154:	e7be      	b.n	200140d4 <main+0xd0>
+		read_name(&user_pet);
+20014156:	4c2d      	ldr	r4, [pc, #180]	; (2001420c <main+0x208>)
+20014158:	4620      	mov	r0, r4
+2001415a:	4b45      	ldr	r3, [pc, #276]	; (20014270 <main+0x26c>)
+2001415c:	4798      	blx	r3
+		display_gotoxy(0, 0);
+2001415e:	2100      	movs	r1, #0
+20014160:	4608      	mov	r0, r1
+20014162:	4e2d      	ldr	r6, [pc, #180]	; (20014218 <main+0x214>)
+20014164:	47b0      	blx	r6
+		display_printf("Welcome back!");
+20014166:	4843      	ldr	r0, [pc, #268]	; (20014274 <main+0x270>)
+20014168:	4d34      	ldr	r5, [pc, #208]	; (2001423c <main+0x238>)
+2001416a:	47a8      	blx	r5
+		display_gotoxy(0, 3);
+2001416c:	2103      	movs	r1, #3
+2001416e:	2000      	movs	r0, #0
+20014170:	47b0      	blx	r6
+		display_printf("%s missed you.", user_pet.name);
+20014172:	f104 0110 	add.w	r1, r4, #16
+20014176:	4840      	ldr	r0, [pc, #256]	; (20014278 <main+0x274>)
+20014178:	47a8      	blx	r5
+		delay_ms(3000);
+2001417a:	f640 30b8 	movw	r0, #3000	; 0xbb8
+2001417e:	4b2b      	ldr	r3, [pc, #172]	; (2001422c <main+0x228>)
+20014180:	4798      	blx	r3
+		display_cls();
+20014182:	4b2b      	ldr	r3, [pc, #172]	; (20014230 <main+0x22c>)
+20014184:	4798      	blx	r3
+		draw(user_pet.breed, 100);
+20014186:	2164      	movs	r1, #100	; 0x64
+20014188:	69a0      	ldr	r0, [r4, #24]
+2001418a:	4b35      	ldr	r3, [pc, #212]	; (20014260 <main+0x25c>)
+2001418c:	4798      	blx	r3
+2001418e:	e7bc      	b.n	2001410a <main+0x106>
+		while(selection == NoButton) button_read(&selection);
+		
+		switch(selection)
+		{
+			case NoButton: /* error */ break;
+			case Button0 : show_stats();
+20014190:	4b3a      	ldr	r3, [pc, #232]	; (2001427c <main+0x278>)
+20014192:	4798      	blx	r3
+			case Button1 : if(menuc > 0) --menuc; else menuc = MENU_NUM-1; break;
+20014194:	2f00      	cmp	r7, #0
+20014196:	dd36      	ble.n	20014206 <main+0x202>
+20014198:	3f01      	subs	r7, #1
+			case Button2 : open_menu(menuc); break;
+			case Button3 : menuc = (menuc+1)%MENU_NUM; break;
+			default      : break;
+		}
+		
+		display_clr_line(3);
+2001419a:	2003      	movs	r0, #3
+2001419c:	4b2e      	ldr	r3, [pc, #184]	; (20014258 <main+0x254>)
+2001419e:	4798      	blx	r3
+		update_stats(&user_pet);
+200141a0:	481a      	ldr	r0, [pc, #104]	; (2001420c <main+0x208>)
+200141a2:	4b1b      	ldr	r3, [pc, #108]	; (20014210 <main+0x20c>)
+200141a4:	4798      	blx	r3
+		display_puts(main_menu[menuc]);
+200141a6:	eb04 0387 	add.w	r3, r4, r7, lsl #2
+200141aa:	6918      	ldr	r0, [r3, #16]
+200141ac:	47c0      	blx	r8
+		button_read(&selection);
+200141ae:	4628      	mov	r0, r5
+200141b0:	4b28      	ldr	r3, [pc, #160]	; (20014254 <main+0x250>)
+200141b2:	4798      	blx	r3
+		while(selection == NoButton) button_read(&selection);
+200141b4:	6863      	ldr	r3, [r4, #4]
+200141b6:	f1b3 3fff 	cmp.w	r3, #4294967295
+200141ba:	d106      	bne.n	200141ca <main+0x1c6>
+200141bc:	4e25      	ldr	r6, [pc, #148]	; (20014254 <main+0x250>)
+200141be:	4628      	mov	r0, r5
+200141c0:	47b0      	blx	r6
+200141c2:	6863      	ldr	r3, [r4, #4]
+200141c4:	f1b3 3fff 	cmp.w	r3, #4294967295
+200141c8:	d0f9      	beq.n	200141be <main+0x1ba>
+		switch(selection)
+200141ca:	6863      	ldr	r3, [r4, #4]
+200141cc:	2b03      	cmp	r3, #3
+200141ce:	d8e4      	bhi.n	2001419a <main+0x196>
+200141d0:	a201      	add	r2, pc, #4	; (adr r2, 200141d8 <main+0x1d4>)
+200141d2:	f852 f023 	ldr.w	pc, [r2, r3, lsl #2]
+200141d6:	bf00      	nop
+200141d8:	20014191 	.word	0x20014191
+200141dc:	20014195 	.word	0x20014195
+200141e0:	200141e9 	.word	0x200141e9
+200141e4:	200141f1 	.word	0x200141f1
+			case Button2 : open_menu(menuc); break;
+200141e8:	4638      	mov	r0, r7
+200141ea:	4b25      	ldr	r3, [pc, #148]	; (20014280 <main+0x27c>)
+200141ec:	4798      	blx	r3
+200141ee:	e7d4      	b.n	2001419a <main+0x196>
+			case Button3 : menuc = (menuc+1)%MENU_NUM; break;
+200141f0:	1c7b      	adds	r3, r7, #1
+200141f2:	4a24      	ldr	r2, [pc, #144]	; (20014284 <main+0x280>)
+200141f4:	fb82 1203 	smull	r1, r2, r2, r3
+200141f8:	17df      	asrs	r7, r3, #31
+200141fa:	ebc7 0762 	rsb	r7, r7, r2, asr #1
+200141fe:	eb07 0787 	add.w	r7, r7, r7, lsl #2
+20014202:	1bdf      	subs	r7, r3, r7
+20014204:	e7c9      	b.n	2001419a <main+0x196>
+			case Button1 : if(menuc > 0) --menuc; else menuc = MENU_NUM-1; break;
+20014206:	2704      	movs	r7, #4
+20014208:	e7c7      	b.n	2001419a <main+0x196>
+2001420a:	bf00      	nop
+2001420c:	20015210 	.word	0x20015210
+20014210:	20014925 	.word	0x20014925
+20014214:	20014935 	.word	0x20014935
+20014218:	20014919 	.word	0x20014919
+2001421c:	20014c78 	.word	0x20014c78
+20014220:	200142f5 	.word	0x200142f5
+20014224:	20014c94 	.word	0x20014c94
+20014228:	20014ca8 	.word	0x20014ca8
+2001422c:	2001494d 	.word	0x2001494d
+20014230:	20014911 	.word	0x20014911
+20014234:	20014479 	.word	0x20014479
+20014238:	20014cbc 	.word	0x20014cbc
+2001423c:	200143a1 	.word	0x200143a1
+20014240:	20014cd0 	.word	0x20014cd0
+20014244:	20015220 	.word	0x20015220
+20014248:	20014ce8 	.word	0x20014ce8
+2001424c:	20014cec 	.word	0x20014cec
+20014250:	20014da0 	.word	0x20014da0
+20014254:	20014905 	.word	0x20014905
+20014258:	200148d5 	.word	0x200148d5
+2001425c:	20014d00 	.word	0x20014d00
+20014260:	20014951 	.word	0x20014951
+20014264:	20014da4 	.word	0x20014da4
+20014268:	20014625 	.word	0x20014625
+2001426c:	20014945 	.word	0x20014945
+20014270:	2001492d 	.word	0x2001492d
+20014274:	20014d0c 	.word	0x20014d0c
+20014278:	20014d1c 	.word	0x20014d1c
+2001427c:	20014675 	.word	0x20014675
+20014280:	20014751 	.word	0x20014751
+20014284:	66666667 	.word	0x66666667
+
+20014288 <__do_global_dtors_aux>:
+20014288:	b510      	push	{r4, lr}
+2001428a:	4c05      	ldr	r4, [pc, #20]	; (200142a0 <__do_global_dtors_aux+0x18>)
+2001428c:	7823      	ldrb	r3, [r4, #0]
+2001428e:	b933      	cbnz	r3, 2001429e <__do_global_dtors_aux+0x16>
+20014290:	4b04      	ldr	r3, [pc, #16]	; (200142a4 <__do_global_dtors_aux+0x1c>)
+20014292:	b113      	cbz	r3, 2001429a <__do_global_dtors_aux+0x12>
+20014294:	4804      	ldr	r0, [pc, #16]	; (200142a8 <__do_global_dtors_aux+0x20>)
+20014296:	f3af 8000 	nop.w
+2001429a:	2301      	movs	r3, #1
+2001429c:	7023      	strb	r3, [r4, #0]
+2001429e:	bd10      	pop	{r4, pc}
+200142a0:	200151f4 	.word	0x200151f4
+200142a4:	00000000 	.word	0x00000000
+200142a8:	20014d9c 	.word	0x20014d9c
+
+200142ac <frame_dummy>:
+200142ac:	4b0c      	ldr	r3, [pc, #48]	; (200142e0 <frame_dummy+0x34>)
+200142ae:	b143      	cbz	r3, 200142c2 <frame_dummy+0x16>
+200142b0:	480c      	ldr	r0, [pc, #48]	; (200142e4 <frame_dummy+0x38>)
+200142b2:	490d      	ldr	r1, [pc, #52]	; (200142e8 <frame_dummy+0x3c>)
+200142b4:	b510      	push	{r4, lr}
+200142b6:	f3af 8000 	nop.w
+200142ba:	480c      	ldr	r0, [pc, #48]	; (200142ec <frame_dummy+0x40>)
+200142bc:	6803      	ldr	r3, [r0, #0]
+200142be:	b923      	cbnz	r3, 200142ca <frame_dummy+0x1e>
+200142c0:	bd10      	pop	{r4, pc}
+200142c2:	480a      	ldr	r0, [pc, #40]	; (200142ec <frame_dummy+0x40>)
+200142c4:	6803      	ldr	r3, [r0, #0]
+200142c6:	b933      	cbnz	r3, 200142d6 <frame_dummy+0x2a>
+200142c8:	4770      	bx	lr
+200142ca:	4b09      	ldr	r3, [pc, #36]	; (200142f0 <frame_dummy+0x44>)
+200142cc:	2b00      	cmp	r3, #0
+200142ce:	d0f7      	beq.n	200142c0 <frame_dummy+0x14>
+200142d0:	e8bd 4010 	ldmia.w	sp!, {r4, lr}
+200142d4:	4718      	bx	r3
+200142d6:	4b06      	ldr	r3, [pc, #24]	; (200142f0 <frame_dummy+0x44>)
+200142d8:	2b00      	cmp	r3, #0
+200142da:	d0f5      	beq.n	200142c8 <frame_dummy+0x1c>
+200142dc:	4718      	bx	r3
+200142de:	bf00      	nop
+200142e0:	00000000 	.word	0x00000000
+200142e4:	20014d9c 	.word	0x20014d9c
+200142e8:	200151f8 	.word	0x200151f8
+200142ec:	20014d9c 	.word	0x20014d9c
+200142f0:	00000000 	.word	0x00000000
+
+200142f4 <display_puts>:
+void display_putc(int c);
+void display_gotoxy(uint32_t, uint32_t);
+void display_cls(void);
+
+void display_puts(uint8_t* string)
+{
+200142f4:	b538      	push	{r3, r4, r5, lr}
+	uint8_t c;
+	
+	while(c = *string++) display_putc(c);
+200142f6:	1c44      	adds	r4, r0, #1
+200142f8:	7800      	ldrb	r0, [r0, #0]
+200142fa:	b128      	cbz	r0, 20014308 <display_puts+0x14>
+200142fc:	4d03      	ldr	r5, [pc, #12]	; (2001430c <display_puts+0x18>)
+200142fe:	47a8      	blx	r5
+20014300:	f814 0b01 	ldrb.w	r0, [r4], #1
+20014304:	2800      	cmp	r0, #0
+20014306:	d1fa      	bne.n	200142fe <display_puts+0xa>
+20014308:	bd38      	pop	{r3, r4, r5, pc}
+2001430a:	bf00      	nop
+2001430c:	20014915 	.word	0x20014915
+
+20014310 <log_10>:
+
+int log_10(int num)
+{
+	int i = 0;
+	
+	while(num > 9)
+20014310:	2809      	cmp	r0, #9
+20014312:	dd0d      	ble.n	20014330 <log_10+0x20>
+{
+20014314:	b500      	push	{lr}
+20014316:	4603      	mov	r3, r0
+	while(num > 9)
+20014318:	2000      	movs	r0, #0
+	{
+		num /= 10;
+2001431a:	4906      	ldr	r1, [pc, #24]	; (20014334 <log_10+0x24>)
+2001431c:	fb81 e203 	smull	lr, r2, r1, r3
+20014320:	17db      	asrs	r3, r3, #31
+20014322:	ebc3 03a2 	rsb	r3, r3, r2, asr #2
+		i++;
+20014326:	3001      	adds	r0, #1
+	while(num > 9)
+20014328:	2b09      	cmp	r3, #9
+2001432a:	dcf7      	bgt.n	2001431c <log_10+0xc>
+2001432c:	f85d fb04 	ldr.w	pc, [sp], #4
+	int i = 0;
+20014330:	2000      	movs	r0, #0
+	}
+	
+	return i;
+20014332:	4770      	bx	lr
+20014334:	66666667 	.word	0x66666667
+
+20014338 <display_printn>:
+}
+
+void display_printn(int val)
+{
+20014338:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+2001433a:	af00      	add	r7, sp, #0
+2001433c:	4604      	mov	r4, r0
+	int lim = log_10(val);
+2001433e:	4b16      	ldr	r3, [pc, #88]	; (20014398 <display_printn+0x60>)
+20014340:	4798      	blx	r3
+	
+	char string[lim+1];
+20014342:	f100 0c01 	add.w	ip, r0, #1
+20014346:	f100 0308 	add.w	r3, r0, #8
+2001434a:	f023 0307 	bic.w	r3, r3, #7
+2001434e:	ebad 0d03 	sub.w	sp, sp, r3
+20014352:	466e      	mov	r6, sp
+	int power = 1;
+	int digit;
+	
+	for(int i = lim; i >= 0; i--)
+20014354:	2800      	cmp	r0, #0
+20014356:	db12      	blt.n	2001437e <display_printn+0x46>
+20014358:	1835      	adds	r5, r6, r0
+2001435a:	f10d 3eff 	add.w	lr, sp, #4294967295
+2001435e:	2101      	movs	r1, #1
+	{
+		digit = val%(power*10);
+20014360:	eb01 0281 	add.w	r2, r1, r1, lsl #2
+20014364:	0052      	lsls	r2, r2, #1
+20014366:	fb94 f3f2 	sdiv	r3, r4, r2
+2001436a:	fb02 4313 	mls	r3, r2, r3, r4
+		digit /= power;
+2001436e:	fb93 f3f1 	sdiv	r3, r3, r1
+		digit += 48;
+20014372:	3330      	adds	r3, #48	; 0x30
+		
+		string[i] = digit;
+20014374:	f805 3901 	strb.w	r3, [r5], #-1
+		
+		power *= 10;
+20014378:	4611      	mov	r1, r2
+	for(int i = lim; i >= 0; i--)
+2001437a:	4575      	cmp	r5, lr
+2001437c:	d1f0      	bne.n	20014360 <display_printn+0x28>
+	}
+	
+	for(int i=0; i < lim+1; i++) display_putc(string[i]);
+2001437e:	f1bc 0f00 	cmp.w	ip, #0
+20014382:	dd07      	ble.n	20014394 <display_printn+0x5c>
+20014384:	1e74      	subs	r4, r6, #1
+20014386:	1835      	adds	r5, r6, r0
+20014388:	4e04      	ldr	r6, [pc, #16]	; (2001439c <display_printn+0x64>)
+2001438a:	f814 0f01 	ldrb.w	r0, [r4, #1]!
+2001438e:	47b0      	blx	r6
+20014390:	42a5      	cmp	r5, r4
+20014392:	d1fa      	bne.n	2001438a <display_printn+0x52>
+}
+20014394:	46bd      	mov	sp, r7
+20014396:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+20014398:	20014311 	.word	0x20014311
+2001439c:	20014915 	.word	0x20014915
+
+200143a0 <display_printf>:
+
+/* Adapted from vishal's example: https://stackoverflow.com/questions/1735236/how-to-write-my-own-printf-in-c on November 8, 2018, 2:13 P.M. */
+void display_printf(const char *format, ...)
+{
+200143a0:	b40f      	push	{r0, r1, r2, r3}
+200143a2:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+200143a6:	b082      	sub	sp, #8
+200143a8:	ab08      	add	r3, sp, #32
+200143aa:	f853 4b04 	ldr.w	r4, [r3], #4
+	char *ind;
+	
+	va_list valist;
+	
+	va_start(valist, format);
+200143ae:	9301      	str	r3, [sp, #4]
+	
+	for(ind = format; *ind != '\0'; ind++)
+200143b0:	7823      	ldrb	r3, [r4, #0]
+200143b2:	b33b      	cbz	r3, 20014404 <display_printf+0x64>
+	{
+		while(*ind != '%' && *ind != '\0')
+		{
+			display_putc(*ind);
+200143b4:	4d17      	ldr	r5, [pc, #92]	; (20014414 <display_printf+0x74>)
+		
+		switch(*ind)
+		{
+			case 'c' : display_putc(va_arg(valist, char)); break;
+			case 'd' : display_printn(va_arg(valist, int)); break;
+			case 's' : display_puts(va_arg(valist, uint8_t*)); break;
+200143b6:	f8df 8064 	ldr.w	r8, [pc, #100]	; 2001441c <display_printf+0x7c>
+			case 'd' : display_printn(va_arg(valist, int)); break;
+200143ba:	4f17      	ldr	r7, [pc, #92]	; (20014418 <display_printf+0x78>)
+200143bc:	e017      	b.n	200143ee <display_printf+0x4e>
+200143be:	deff      	udf	#255	; 0xff
+200143c0:	9b01      	ldr	r3, [sp, #4]
+200143c2:	1d1a      	adds	r2, r3, #4
+200143c4:	9201      	str	r2, [sp, #4]
+200143c6:	6818      	ldr	r0, [r3, #0]
+200143c8:	47b8      	blx	r7
+200143ca:	e00d      	b.n	200143e8 <display_printf+0x48>
+			case 's' : display_puts(va_arg(valist, uint8_t*)); break;
+200143cc:	9b01      	ldr	r3, [sp, #4]
+200143ce:	1d1a      	adds	r2, r3, #4
+200143d0:	9201      	str	r2, [sp, #4]
+200143d2:	6818      	ldr	r0, [r3, #0]
+200143d4:	47c0      	blx	r8
+200143d6:	e007      	b.n	200143e8 <display_printf+0x48>
+			ind++;
+200143d8:	4626      	mov	r6, r4
+		switch(*ind)
+200143da:	7873      	ldrb	r3, [r6, #1]
+200143dc:	2b64      	cmp	r3, #100	; 0x64
+200143de:	d0ef      	beq.n	200143c0 <display_printf+0x20>
+200143e0:	2b73      	cmp	r3, #115	; 0x73
+200143e2:	d0f3      	beq.n	200143cc <display_printf+0x2c>
+200143e4:	2b63      	cmp	r3, #99	; 0x63
+200143e6:	d0ea      	beq.n	200143be <display_printf+0x1e>
+	for(ind = format; *ind != '\0'; ind++)
+200143e8:	1cb4      	adds	r4, r6, #2
+200143ea:	78b3      	ldrb	r3, [r6, #2]
+200143ec:	b153      	cbz	r3, 20014404 <display_printf+0x64>
+		while(*ind != '%' && *ind != '\0')
+200143ee:	7820      	ldrb	r0, [r4, #0]
+200143f0:	2825      	cmp	r0, #37	; 0x25
+200143f2:	d00c      	beq.n	2001440e <display_printf+0x6e>
+200143f4:	b130      	cbz	r0, 20014404 <display_printf+0x64>
+			display_putc(*ind);
+200143f6:	47a8      	blx	r5
+		while(*ind != '%' && *ind != '\0')
+200143f8:	f814 0f01 	ldrb.w	r0, [r4, #1]!
+200143fc:	2825      	cmp	r0, #37	; 0x25
+200143fe:	d0eb      	beq.n	200143d8 <display_printf+0x38>
+20014400:	2800      	cmp	r0, #0
+20014402:	d1f8      	bne.n	200143f6 <display_printf+0x56>
+		}
+	}
+	
+	va_end(valist);
+}
+20014404:	b002      	add	sp, #8
+20014406:	e8bd 41f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, lr}
+2001440a:	b004      	add	sp, #16
+2001440c:	4770      	bx	lr
+		while(*ind != '%' && *ind != '\0')
+2001440e:	4626      	mov	r6, r4
+20014410:	e7e3      	b.n	200143da <display_printf+0x3a>
+20014412:	bf00      	nop
+20014414:	20014915 	.word	0x20014915
+20014418:	20014339 	.word	0x20014339
+2001441c:	200142f5 	.word	0x200142f5
+
+20014420 <decrement_cursor>:
+	return false;
+}
+
+void decrement_cursor(void)
+{
+	if(cursor[0] == ' ') cursor[0] = 'z'; //Switch to lower case
+20014420:	4b09      	ldr	r3, [pc, #36]	; (20014448 <decrement_cursor+0x28>)
+20014422:	781b      	ldrb	r3, [r3, #0]
+20014424:	2b20      	cmp	r3, #32
+20014426:	d007      	beq.n	20014438 <decrement_cursor+0x18>
+	
+	else
+	{
+		cursor[0]--;
+20014428:	3b01      	subs	r3, #1
+2001442a:	b2db      	uxtb	r3, r3
+		
+		if(cursor[0] < 'A') cursor[0] = ' '; //inserts empty space if user decrements below 'A'
+2001442c:	2b40      	cmp	r3, #64	; 0x40
+2001442e:	d807      	bhi.n	20014440 <decrement_cursor+0x20>
+20014430:	2220      	movs	r2, #32
+20014432:	4b05      	ldr	r3, [pc, #20]	; (20014448 <decrement_cursor+0x28>)
+20014434:	701a      	strb	r2, [r3, #0]
+20014436:	4770      	bx	lr
+	if(cursor[0] == ' ') cursor[0] = 'z'; //Switch to lower case
+20014438:	227a      	movs	r2, #122	; 0x7a
+2001443a:	4b03      	ldr	r3, [pc, #12]	; (20014448 <decrement_cursor+0x28>)
+2001443c:	701a      	strb	r2, [r3, #0]
+2001443e:	4770      	bx	lr
+		cursor[0]--;
+20014440:	4a01      	ldr	r2, [pc, #4]	; (20014448 <decrement_cursor+0x28>)
+20014442:	7013      	strb	r3, [r2, #0]
+20014444:	4770      	bx	lr
+20014446:	bf00      	nop
+20014448:	20014da0 	.word	0x20014da0
+
+2001444c <increment_cursor>:
+	}
+}
+
+void increment_cursor(void)
+{
+	if(cursor[0] == ' ') cursor[0] = 'A'; //Switch to upper case
+2001444c:	4b09      	ldr	r3, [pc, #36]	; (20014474 <increment_cursor+0x28>)
+2001444e:	781b      	ldrb	r3, [r3, #0]
+20014450:	2b20      	cmp	r3, #32
+20014452:	d007      	beq.n	20014464 <increment_cursor+0x18>
+	else
+	{
+		cursor[0]++;
+20014454:	3301      	adds	r3, #1
+20014456:	b2db      	uxtb	r3, r3
+		
+		if(cursor[0] > 'z') cursor[0] = ' '; //inserts empty space if user increments above 'z'
+20014458:	2b7a      	cmp	r3, #122	; 0x7a
+2001445a:	d907      	bls.n	2001446c <increment_cursor+0x20>
+2001445c:	2220      	movs	r2, #32
+2001445e:	4b05      	ldr	r3, [pc, #20]	; (20014474 <increment_cursor+0x28>)
+20014460:	701a      	strb	r2, [r3, #0]
+20014462:	4770      	bx	lr
+	if(cursor[0] == ' ') cursor[0] = 'A'; //Switch to upper case
+20014464:	2241      	movs	r2, #65	; 0x41
+20014466:	4b03      	ldr	r3, [pc, #12]	; (20014474 <increment_cursor+0x28>)
+20014468:	701a      	strb	r2, [r3, #0]
+2001446a:	4770      	bx	lr
+		cursor[0]++;
+2001446c:	4a01      	ldr	r2, [pc, #4]	; (20014474 <increment_cursor+0x28>)
+2001446e:	7013      	strb	r3, [r2, #0]
+20014470:	4770      	bx	lr
+20014472:	bf00      	nop
+20014474:	20014da0 	.word	0x20014da0
+
+20014478 <make_name>:
+{
+20014478:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+2001447c:	b083      	sub	sp, #12
+	display_gotoxy(0, 0);
+2001447e:	2100      	movs	r1, #0
+20014480:	4608      	mov	r0, r1
+20014482:	4c56      	ldr	r4, [pc, #344]	; (200145dc <make_name+0x164>)
+20014484:	47a0      	blx	r4
+	display_puts("Buttons 1 & 2: scroll");
+20014486:	4856      	ldr	r0, [pc, #344]	; (200145e0 <make_name+0x168>)
+20014488:	4d56      	ldr	r5, [pc, #344]	; (200145e4 <make_name+0x16c>)
+2001448a:	47a8      	blx	r5
+	display_gotoxy(0, 1);
+2001448c:	2101      	movs	r1, #1
+2001448e:	2000      	movs	r0, #0
+20014490:	47a0      	blx	r4
+	display_puts("Button 3: enter");
+20014492:	4855      	ldr	r0, [pc, #340]	; (200145e8 <make_name+0x170>)
+20014494:	47a8      	blx	r5
+	display_gotoxy(0, 2);
+20014496:	2102      	movs	r1, #2
+20014498:	2000      	movs	r0, #0
+2001449a:	47a0      	blx	r4
+	display_puts("Button 0: confirm");
+2001449c:	4853      	ldr	r0, [pc, #332]	; (200145ec <make_name+0x174>)
+2001449e:	47a8      	blx	r5
+	char buffer[8] = {0};
+200144a0:	2700      	movs	r7, #0
+200144a2:	9700      	str	r7, [sp, #0]
+200144a4:	9701      	str	r7, [sp, #4]
+		display_gotoxy(0, 3);
+200144a6:	2103      	movs	r1, #3
+200144a8:	4638      	mov	r0, r7
+200144aa:	47a0      	blx	r4
+	uint8_t pos = 0;
+200144ac:	46b8      	mov	r8, r7
+		for(int i=0; i<pos; i++) display_putc(buffer[i]);
+200144ae:	46bb      	mov	fp, r7
+		display_putc(cursor[count/500]);
+200144b0:	f8df 9150 	ldr.w	r9, [pc, #336]	; 20014604 <make_name+0x18c>
+200144b4:	f8df a168 	ldr.w	sl, [pc, #360]	; 20014620 <make_name+0x1a8>
+200144b8:	e026      	b.n	20014508 <make_name+0x90>
+				case Button1 : decrement_cursor(); break;
+200144ba:	4b4d      	ldr	r3, [pc, #308]	; (200145f0 <make_name+0x178>)
+200144bc:	4798      	blx	r3
+		if(selection == Button0) {display_putc(cursor[0]); break;}
+200144be:	f8d9 3004 	ldr.w	r3, [r9, #4]
+200144c2:	2b00      	cmp	r3, #0
+200144c4:	d04c      	beq.n	20014560 <make_name+0xe8>
+	for(int count = 0; pos < 7; count++)
+200144c6:	1c7b      	adds	r3, r7, #1
+200144c8:	f1b8 0f06 	cmp.w	r8, #6
+200144cc:	d84c      	bhi.n	20014568 <make_name+0xf0>
+		count = count%1000;
+200144ce:	fb8a 1203 	smull	r1, r2, sl, r3
+200144d2:	17df      	asrs	r7, r3, #31
+200144d4:	ebc7 17a2 	rsb	r7, r7, r2, asr #6
+200144d8:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
+200144dc:	fb02 3717 	mls	r7, r2, r7, r3
+		display_gotoxy(0, 3);
+200144e0:	2103      	movs	r1, #3
+200144e2:	2000      	movs	r0, #0
+200144e4:	4b3d      	ldr	r3, [pc, #244]	; (200145dc <make_name+0x164>)
+200144e6:	4798      	blx	r3
+		for(int i=0; i<pos; i++) display_putc(buffer[i]);
+200144e8:	46c3      	mov	fp, r8
+200144ea:	f1b8 0f00 	cmp.w	r8, #0
+200144ee:	d00b      	beq.n	20014508 <make_name+0x90>
+200144f0:	f10d 34ff 	add.w	r4, sp, #4294967295
+200144f4:	ab02      	add	r3, sp, #8
+200144f6:	eb03 0508 	add.w	r5, r3, r8
+200144fa:	3d09      	subs	r5, #9
+200144fc:	4e3d      	ldr	r6, [pc, #244]	; (200145f4 <make_name+0x17c>)
+200144fe:	f814 0f01 	ldrb.w	r0, [r4, #1]!
+20014502:	47b0      	blx	r6
+20014504:	42ac      	cmp	r4, r5
+20014506:	d1fa      	bne.n	200144fe <make_name+0x86>
+		display_putc(cursor[count/500]);
+20014508:	fb8a 2307 	smull	r2, r3, sl, r7
+2001450c:	17fa      	asrs	r2, r7, #31
+2001450e:	ebc2 1363 	rsb	r3, r2, r3, asr #5
+20014512:	f819 0003 	ldrb.w	r0, [r9, r3]
+20014516:	4b37      	ldr	r3, [pc, #220]	; (200145f4 <make_name+0x17c>)
+20014518:	4798      	blx	r3
+		button_read(&selection);
+2001451a:	4837      	ldr	r0, [pc, #220]	; (200145f8 <make_name+0x180>)
+2001451c:	4b37      	ldr	r3, [pc, #220]	; (200145fc <make_name+0x184>)
+2001451e:	4798      	blx	r3
+		if(selection != NoButton)
+20014520:	f8d9 3004 	ldr.w	r3, [r9, #4]
+20014524:	f1b3 3fff 	cmp.w	r3, #4294967295
+20014528:	d0c9      	beq.n	200144be <make_name+0x46>
+			switch(selection)
+2001452a:	f8d9 3004 	ldr.w	r3, [r9, #4]
+2001452e:	2b02      	cmp	r3, #2
+20014530:	d004      	beq.n	2001453c <make_name+0xc4>
+20014532:	2b03      	cmp	r3, #3
+20014534:	d005      	beq.n	20014542 <make_name+0xca>
+20014536:	2b01      	cmp	r3, #1
+20014538:	d1c1      	bne.n	200144be <make_name+0x46>
+2001453a:	e7be      	b.n	200144ba <make_name+0x42>
+				case Button2 : increment_cursor(); break;
+2001453c:	4b30      	ldr	r3, [pc, #192]	; (20014600 <make_name+0x188>)
+2001453e:	4798      	blx	r3
+20014540:	e7bd      	b.n	200144be <make_name+0x46>
+				case Button3 : display_putc(cursor[0]); buffer[pos++] = cursor[0]; break;
+20014542:	f899 0000 	ldrb.w	r0, [r9]
+20014546:	4b2b      	ldr	r3, [pc, #172]	; (200145f4 <make_name+0x17c>)
+20014548:	4798      	blx	r3
+2001454a:	f108 0801 	add.w	r8, r8, #1
+2001454e:	fa5f f888 	uxtb.w	r8, r8
+20014552:	ab02      	add	r3, sp, #8
+20014554:	449b      	add	fp, r3
+20014556:	f899 3000 	ldrb.w	r3, [r9]
+2001455a:	f80b 3c08 	strb.w	r3, [fp, #-8]
+2001455e:	e7ae      	b.n	200144be <make_name+0x46>
+		if(selection == Button0) {display_putc(cursor[0]); break;}
+20014560:	4b28      	ldr	r3, [pc, #160]	; (20014604 <make_name+0x18c>)
+20014562:	7818      	ldrb	r0, [r3, #0]
+20014564:	4b23      	ldr	r3, [pc, #140]	; (200145f4 <make_name+0x17c>)
+20014566:	4798      	blx	r3
+20014568:	f10d 33ff 	add.w	r3, sp, #4294967295
+2001456c:	4a26      	ldr	r2, [pc, #152]	; (20014608 <make_name+0x190>)
+2001456e:	f10d 0007 	add.w	r0, sp, #7
+	for(int i=0; i<8; i++) user_pet.name[i] = buffer[i];
+20014572:	f813 1f01 	ldrb.w	r1, [r3, #1]!
+20014576:	f802 1b01 	strb.w	r1, [r2], #1
+2001457a:	4298      	cmp	r0, r3
+2001457c:	d1f9      	bne.n	20014572 <make_name+0xfa>
+	display_cls();
+2001457e:	4b23      	ldr	r3, [pc, #140]	; (2001460c <make_name+0x194>)
+20014580:	4798      	blx	r3
+	display_gotoxy(0, 0);
+20014582:	2100      	movs	r1, #0
+20014584:	4608      	mov	r0, r1
+20014586:	4c15      	ldr	r4, [pc, #84]	; (200145dc <make_name+0x164>)
+20014588:	47a0      	blx	r4
+	display_printf("Name: %s", user_pet.name);
+2001458a:	491f      	ldr	r1, [pc, #124]	; (20014608 <make_name+0x190>)
+2001458c:	4820      	ldr	r0, [pc, #128]	; (20014610 <make_name+0x198>)
+2001458e:	4b21      	ldr	r3, [pc, #132]	; (20014614 <make_name+0x19c>)
+20014590:	4798      	blx	r3
+	display_gotoxy(0, 1);
+20014592:	2101      	movs	r1, #1
+20014594:	2000      	movs	r0, #0
+20014596:	47a0      	blx	r4
+	display_puts("Is this ok?");
+20014598:	481f      	ldr	r0, [pc, #124]	; (20014618 <make_name+0x1a0>)
+2001459a:	4d12      	ldr	r5, [pc, #72]	; (200145e4 <make_name+0x16c>)
+2001459c:	47a8      	blx	r5
+	display_gotoxy(0, 3);
+2001459e:	2103      	movs	r1, #3
+200145a0:	2000      	movs	r0, #0
+200145a2:	47a0      	blx	r4
+	display_puts("Button 1: ok Else: cancel");
+200145a4:	481d      	ldr	r0, [pc, #116]	; (2001461c <make_name+0x1a4>)
+200145a6:	47a8      	blx	r5
+	button_read(&selection);
+200145a8:	4c16      	ldr	r4, [pc, #88]	; (20014604 <make_name+0x18c>)
+200145aa:	1d20      	adds	r0, r4, #4
+200145ac:	4b13      	ldr	r3, [pc, #76]	; (200145fc <make_name+0x184>)
+200145ae:	4798      	blx	r3
+	while(selection == NoButton) button_read(&selection);
+200145b0:	6863      	ldr	r3, [r4, #4]
+200145b2:	f1b3 3fff 	cmp.w	r3, #4294967295
+200145b6:	d107      	bne.n	200145c8 <make_name+0x150>
+200145b8:	1d26      	adds	r6, r4, #4
+200145ba:	4d10      	ldr	r5, [pc, #64]	; (200145fc <make_name+0x184>)
+200145bc:	4630      	mov	r0, r6
+200145be:	47a8      	blx	r5
+200145c0:	6863      	ldr	r3, [r4, #4]
+200145c2:	f1b3 3fff 	cmp.w	r3, #4294967295
+200145c6:	d0f9      	beq.n	200145bc <make_name+0x144>
+	if(selection == Button1) return true;
+200145c8:	4b0e      	ldr	r3, [pc, #56]	; (20014604 <make_name+0x18c>)
+200145ca:	6858      	ldr	r0, [r3, #4]
+}
+200145cc:	2801      	cmp	r0, #1
+200145ce:	bf14      	ite	ne
+200145d0:	2000      	movne	r0, #0
+200145d2:	2001      	moveq	r0, #1
+200145d4:	b003      	add	sp, #12
+200145d6:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+200145da:	bf00      	nop
+200145dc:	20014919 	.word	0x20014919
+200145e0:	20014a74 	.word	0x20014a74
+200145e4:	200142f5 	.word	0x200142f5
+200145e8:	20014a8c 	.word	0x20014a8c
+200145ec:	20014a9c 	.word	0x20014a9c
+200145f0:	20014421 	.word	0x20014421
+200145f4:	20014915 	.word	0x20014915
+200145f8:	20014da4 	.word	0x20014da4
+200145fc:	20014905 	.word	0x20014905
+20014600:	2001444d 	.word	0x2001444d
+20014604:	20014da0 	.word	0x20014da0
+20014608:	20015220 	.word	0x20015220
+2001460c:	20014911 	.word	0x20014911
+20014610:	20014ab0 	.word	0x20014ab0
+20014614:	200143a1 	.word	0x200143a1
+20014618:	20014abc 	.word	0x20014abc
+2001461c:	20014ac8 	.word	0x20014ac8
+20014620:	10624dd3 	.word	0x10624dd3
+
+20014624 <print_menu_header>:
+	start_time();
+	print_menu_header();
+}
+
+void print_menu_header()
+{
+20014624:	b538      	push	{r3, r4, r5, lr}
+	display_cls();
+20014626:	4b0b      	ldr	r3, [pc, #44]	; (20014654 <print_menu_header+0x30>)
+20014628:	4798      	blx	r3
+	display_gotoxy(0, 0);
+2001462a:	2100      	movs	r1, #0
+2001462c:	4608      	mov	r0, r1
+2001462e:	4c0a      	ldr	r4, [pc, #40]	; (20014658 <print_menu_header+0x34>)
+20014630:	47a0      	blx	r4
+	display_printf("What would you and"); 
+20014632:	480a      	ldr	r0, [pc, #40]	; (2001465c <print_menu_header+0x38>)
+20014634:	4d0a      	ldr	r5, [pc, #40]	; (20014660 <print_menu_header+0x3c>)
+20014636:	47a8      	blx	r5
+	display_gotoxy(0, 1);
+20014638:	2101      	movs	r1, #1
+2001463a:	2000      	movs	r0, #0
+2001463c:	47a0      	blx	r4
+	display_printf("%s like to do?", user_pet.name);
+2001463e:	4909      	ldr	r1, [pc, #36]	; (20014664 <print_menu_header+0x40>)
+20014640:	4809      	ldr	r0, [pc, #36]	; (20014668 <print_menu_header+0x44>)
+20014642:	47a8      	blx	r5
+	display_gotoxy(0, 3);
+20014644:	2103      	movs	r1, #3
+20014646:	2000      	movs	r0, #0
+20014648:	47a0      	blx	r4
+	button_read(&selection);
+2001464a:	4808      	ldr	r0, [pc, #32]	; (2001466c <print_menu_header+0x48>)
+2001464c:	4b08      	ldr	r3, [pc, #32]	; (20014670 <print_menu_header+0x4c>)
+2001464e:	4798      	blx	r3
+20014650:	bd38      	pop	{r3, r4, r5, pc}
+20014652:	bf00      	nop
+20014654:	20014911 	.word	0x20014911
+20014658:	20014919 	.word	0x20014919
+2001465c:	20014ae4 	.word	0x20014ae4
+20014660:	200143a1 	.word	0x200143a1
+20014664:	20015220 	.word	0x20015220
+20014668:	20014af8 	.word	0x20014af8
+2001466c:	20014da4 	.word	0x20014da4
+20014670:	20014905 	.word	0x20014905
+
+20014674 <show_stats>:
+{
+20014674:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
+	update_stats(&user_pet);
+20014678:	4e24      	ldr	r6, [pc, #144]	; (2001470c <show_stats+0x98>)
+2001467a:	4630      	mov	r0, r6
+2001467c:	4b24      	ldr	r3, [pc, #144]	; (20014710 <show_stats+0x9c>)
+2001467e:	4798      	blx	r3
+	display_cls();
+20014680:	f8df 90c4 	ldr.w	r9, [pc, #196]	; 20014748 <show_stats+0xd4>
+20014684:	47c8      	blx	r9
+	display_gotoxy(0, 0);
+20014686:	2100      	movs	r1, #0
+20014688:	4608      	mov	r0, r1
+2001468a:	4c22      	ldr	r4, [pc, #136]	; (20014714 <show_stats+0xa0>)
+2001468c:	47a0      	blx	r4
+	display_printf("Once finished viewing,");
+2001468e:	4822      	ldr	r0, [pc, #136]	; (20014718 <show_stats+0xa4>)
+20014690:	4d22      	ldr	r5, [pc, #136]	; (2001471c <show_stats+0xa8>)
+20014692:	47a8      	blx	r5
+	display_gotoxy(0, 1);
+20014694:	2101      	movs	r1, #1
+20014696:	2000      	movs	r0, #0
+20014698:	47a0      	blx	r4
+	display_puts("press any button to continue");
+2001469a:	4821      	ldr	r0, [pc, #132]	; (20014720 <show_stats+0xac>)
+2001469c:	4b21      	ldr	r3, [pc, #132]	; (20014724 <show_stats+0xb0>)
+2001469e:	4798      	blx	r3
+	delay_ms(2500);
+200146a0:	f640 10c4 	movw	r0, #2500	; 0x9c4
+200146a4:	4b20      	ldr	r3, [pc, #128]	; (20014728 <show_stats+0xb4>)
+200146a6:	4798      	blx	r3
+	button_read(&selection); //clear input in case user accidentally presses button here
+200146a8:	f8df 80a0 	ldr.w	r8, [pc, #160]	; 2001474c <show_stats+0xd8>
+200146ac:	4640      	mov	r0, r8
+200146ae:	4f1f      	ldr	r7, [pc, #124]	; (2001472c <show_stats+0xb8>)
+200146b0:	47b8      	blx	r7
+	display_cls();
+200146b2:	47c8      	blx	r9
+	display_gotoxy(0, 0);
+200146b4:	2100      	movs	r1, #0
+200146b6:	4608      	mov	r0, r1
+200146b8:	47a0      	blx	r4
+	display_printf("Hunger:    %d", MAX_STAT-user_pet.satiety);
+200146ba:	6831      	ldr	r1, [r6, #0]
+200146bc:	f1c1 0164 	rsb	r1, r1, #100	; 0x64
+200146c0:	481b      	ldr	r0, [pc, #108]	; (20014730 <show_stats+0xbc>)
+200146c2:	47a8      	blx	r5
+	display_gotoxy(0, 1);
+200146c4:	2101      	movs	r1, #1
+200146c6:	2000      	movs	r0, #0
+200146c8:	47a0      	blx	r4
+	display_printf("Energy:    %d", user_pet.energy);
+200146ca:	6871      	ldr	r1, [r6, #4]
+200146cc:	4819      	ldr	r0, [pc, #100]	; (20014734 <show_stats+0xc0>)
+200146ce:	47a8      	blx	r5
+	display_gotoxy(0, 2);
+200146d0:	2102      	movs	r1, #2
+200146d2:	2000      	movs	r0, #0
+200146d4:	47a0      	blx	r4
+	display_printf("Happiness: %d", user_pet.happiness);
+200146d6:	68b1      	ldr	r1, [r6, #8]
+200146d8:	4817      	ldr	r0, [pc, #92]	; (20014738 <show_stats+0xc4>)
+200146da:	47a8      	blx	r5
+	display_gotoxy(0, 3);
+200146dc:	2103      	movs	r1, #3
+200146de:	2000      	movs	r0, #0
+200146e0:	47a0      	blx	r4
+	display_printf("Age :      %d", user_pet.age);
+200146e2:	68f1      	ldr	r1, [r6, #12]
+200146e4:	4815      	ldr	r0, [pc, #84]	; (2001473c <show_stats+0xc8>)
+200146e6:	47a8      	blx	r5
+	button_read(&selection); //clear once more
+200146e8:	4640      	mov	r0, r8
+200146ea:	47b8      	blx	r7
+	do button_read(&selection);
+200146ec:	f1a8 0404 	sub.w	r4, r8, #4
+200146f0:	1d26      	adds	r6, r4, #4
+200146f2:	463d      	mov	r5, r7
+200146f4:	4630      	mov	r0, r6
+200146f6:	47a8      	blx	r5
+	while (selection == NoButton);
+200146f8:	6863      	ldr	r3, [r4, #4]
+200146fa:	f1b3 3fff 	cmp.w	r3, #4294967295
+200146fe:	d0f9      	beq.n	200146f4 <show_stats+0x80>
+	start_time();
+20014700:	4b0f      	ldr	r3, [pc, #60]	; (20014740 <show_stats+0xcc>)
+20014702:	4798      	blx	r3
+	print_menu_header();
+20014704:	4b0f      	ldr	r3, [pc, #60]	; (20014744 <show_stats+0xd0>)
+20014706:	4798      	blx	r3
+20014708:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
+2001470c:	20015210 	.word	0x20015210
+20014710:	20014925 	.word	0x20014925
+20014714:	20014919 	.word	0x20014919
+20014718:	20014b08 	.word	0x20014b08
+2001471c:	200143a1 	.word	0x200143a1
+20014720:	20014b20 	.word	0x20014b20
+20014724:	200142f5 	.word	0x200142f5
+20014728:	2001494d 	.word	0x2001494d
+2001472c:	20014905 	.word	0x20014905
+20014730:	20014b40 	.word	0x20014b40
+20014734:	20014b50 	.word	0x20014b50
+20014738:	20014b60 	.word	0x20014b60
+2001473c:	20014b70 	.word	0x20014b70
+20014740:	20014945 	.word	0x20014945
+20014744:	20014625 	.word	0x20014625
+20014748:	20014911 	.word	0x20014911
+2001474c:	20014da4 	.word	0x20014da4
+
+20014750 <open_menu>:
+{
+20014750:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+	switch(op)
+20014754:	2804      	cmp	r0, #4
+20014756:	f200 8085 	bhi.w	20014864 <open_menu+0x114>
+2001475a:	e8df f000 	tbb	[pc, r0]
+2001475e:	2a03      	.short	0x2a03
+20014760:	6e4c      	.short	0x6e4c
+20014762:	72          	.byte	0x72
+20014763:	00          	.byte	0x00
+		case 0: display_cls(); 
+20014764:	f8df 8154 	ldr.w	r8, [pc, #340]	; 200148bc <open_menu+0x16c>
+20014768:	47c0      	blx	r8
+			display_gotoxy(0, 0); 
+2001476a:	2100      	movs	r1, #0
+2001476c:	4608      	mov	r0, r1
+2001476e:	4f42      	ldr	r7, [pc, #264]	; (20014878 <open_menu+0x128>)
+20014770:	47b8      	blx	r7
+			display_printf("You give %s some pet food", user_pet.name);
+20014772:	4c42      	ldr	r4, [pc, #264]	; (2001487c <open_menu+0x12c>)
+20014774:	f104 0610 	add.w	r6, r4, #16
+20014778:	4631      	mov	r1, r6
+2001477a:	4841      	ldr	r0, [pc, #260]	; (20014880 <open_menu+0x130>)
+2001477c:	4d41      	ldr	r5, [pc, #260]	; (20014884 <open_menu+0x134>)
+2001477e:	47a8      	blx	r5
+			delay_ms(2000);
+20014780:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+20014784:	4b40      	ldr	r3, [pc, #256]	; (20014888 <open_menu+0x138>)
+20014786:	4798      	blx	r3
+			draw(user_pet.breed, 100);
+20014788:	2164      	movs	r1, #100	; 0x64
+2001478a:	69a0      	ldr	r0, [r4, #24]
+2001478c:	4b3f      	ldr	r3, [pc, #252]	; (2001488c <open_menu+0x13c>)
+2001478e:	4798      	blx	r3
+			feed( &user_pet );
+20014790:	4620      	mov	r0, r4
+20014792:	4b3f      	ldr	r3, [pc, #252]	; (20014890 <open_menu+0x140>)
+20014794:	4798      	blx	r3
+			display_cls();
+20014796:	47c0      	blx	r8
+			display_gotoxy(0, 0);
+20014798:	2100      	movs	r1, #0
+2001479a:	4608      	mov	r0, r1
+2001479c:	47b8      	blx	r7
+			display_printf("%s's hunger is now %d", user_pet.name, MAX_STAT-user_pet.satiety); //Hunger is the inverse of satiety.
+2001479e:	6822      	ldr	r2, [r4, #0]
+200147a0:	f1c2 0264 	rsb	r2, r2, #100	; 0x64
+200147a4:	4631      	mov	r1, r6
+200147a6:	483b      	ldr	r0, [pc, #236]	; (20014894 <open_menu+0x144>)
+200147a8:	47a8      	blx	r5
+	print_menu_header();
+200147aa:	4b3b      	ldr	r3, [pc, #236]	; (20014898 <open_menu+0x148>)
+200147ac:	4798      	blx	r3
+200147ae:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
+		case 1: display_cls(); 
+200147b2:	f8df 8108 	ldr.w	r8, [pc, #264]	; 200148bc <open_menu+0x16c>
+200147b6:	47c0      	blx	r8
+			display_gotoxy(0, 0); 
+200147b8:	2100      	movs	r1, #0
+200147ba:	4608      	mov	r0, r1
+200147bc:	4f2e      	ldr	r7, [pc, #184]	; (20014878 <open_menu+0x128>)
+200147be:	47b8      	blx	r7
+			display_printf("You play with %s for a while", user_pet.name);
+200147c0:	4c2e      	ldr	r4, [pc, #184]	; (2001487c <open_menu+0x12c>)
+200147c2:	f104 0610 	add.w	r6, r4, #16
+200147c6:	4631      	mov	r1, r6
+200147c8:	4834      	ldr	r0, [pc, #208]	; (2001489c <open_menu+0x14c>)
+200147ca:	4d2e      	ldr	r5, [pc, #184]	; (20014884 <open_menu+0x134>)
+200147cc:	47a8      	blx	r5
+			delay_ms(2000);
+200147ce:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+200147d2:	4b2d      	ldr	r3, [pc, #180]	; (20014888 <open_menu+0x138>)
+200147d4:	4798      	blx	r3
+			draw(user_pet.breed, 100);
+200147d6:	2164      	movs	r1, #100	; 0x64
+200147d8:	69a0      	ldr	r0, [r4, #24]
+200147da:	4b2c      	ldr	r3, [pc, #176]	; (2001488c <open_menu+0x13c>)
+200147dc:	4798      	blx	r3
+			play( &user_pet );
+200147de:	4620      	mov	r0, r4
+200147e0:	4b2f      	ldr	r3, [pc, #188]	; (200148a0 <open_menu+0x150>)
+200147e2:	4798      	blx	r3
+			display_cls();
+200147e4:	47c0      	blx	r8
+			display_gotoxy(0, 0);
+200147e6:	2100      	movs	r1, #0
+200147e8:	4608      	mov	r0, r1
+200147ea:	47b8      	blx	r7
+			display_printf("%s's happiness is now %d", user_pet.name, user_pet.happiness);
+200147ec:	68a2      	ldr	r2, [r4, #8]
+200147ee:	4631      	mov	r1, r6
+200147f0:	482c      	ldr	r0, [pc, #176]	; (200148a4 <open_menu+0x154>)
+200147f2:	47a8      	blx	r5
+			break;
+200147f4:	e7d9      	b.n	200147aa <open_menu+0x5a>
+		case 2: display_cls(); 
+200147f6:	f8df 80c4 	ldr.w	r8, [pc, #196]	; 200148bc <open_menu+0x16c>
+200147fa:	47c0      	blx	r8
+			display_gotoxy(0, 0); 
+200147fc:	2100      	movs	r1, #0
+200147fe:	4608      	mov	r0, r1
+20014800:	4f1d      	ldr	r7, [pc, #116]	; (20014878 <open_menu+0x128>)
+20014802:	47b8      	blx	r7
+			display_printf("%s takes a nap...", user_pet.name);
+20014804:	4c1d      	ldr	r4, [pc, #116]	; (2001487c <open_menu+0x12c>)
+20014806:	f104 0610 	add.w	r6, r4, #16
+2001480a:	4631      	mov	r1, r6
+2001480c:	4826      	ldr	r0, [pc, #152]	; (200148a8 <open_menu+0x158>)
+2001480e:	4d1d      	ldr	r5, [pc, #116]	; (20014884 <open_menu+0x134>)
+20014810:	47a8      	blx	r5
+			delay_ms(2000);
+20014812:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+20014816:	4b1c      	ldr	r3, [pc, #112]	; (20014888 <open_menu+0x138>)
+20014818:	4798      	blx	r3
+			draw(user_pet.breed, 100);
+2001481a:	2164      	movs	r1, #100	; 0x64
+2001481c:	69a0      	ldr	r0, [r4, #24]
+2001481e:	4b1b      	ldr	r3, [pc, #108]	; (2001488c <open_menu+0x13c>)
+20014820:	4798      	blx	r3
+			rest( &user_pet );
+20014822:	4620      	mov	r0, r4
+20014824:	4b21      	ldr	r3, [pc, #132]	; (200148ac <open_menu+0x15c>)
+20014826:	4798      	blx	r3
+			display_cls();
+20014828:	47c0      	blx	r8
+			display_gotoxy(0, 0);
+2001482a:	2100      	movs	r1, #0
+2001482c:	4608      	mov	r0, r1
+2001482e:	47b8      	blx	r7
+			display_printf("%s's energy is now %d", user_pet.name, user_pet.energy);
+20014830:	6862      	ldr	r2, [r4, #4]
+20014832:	4631      	mov	r1, r6
+20014834:	481e      	ldr	r0, [pc, #120]	; (200148b0 <open_menu+0x160>)
+20014836:	47a8      	blx	r5
+			break;
+20014838:	e7b7      	b.n	200147aa <open_menu+0x5a>
+		case 3: show_stats(); 
+2001483a:	4b1e      	ldr	r3, [pc, #120]	; (200148b4 <open_menu+0x164>)
+2001483c:	4798      	blx	r3
+			return;
+2001483e:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
+		case 4: stop_time();
+20014842:	4b1d      	ldr	r3, [pc, #116]	; (200148b8 <open_menu+0x168>)
+20014844:	4798      	blx	r3
+			display_cls();
+20014846:	4b1d      	ldr	r3, [pc, #116]	; (200148bc <open_menu+0x16c>)
+20014848:	4798      	blx	r3
+			save_file( &user_pet );
+2001484a:	480c      	ldr	r0, [pc, #48]	; (2001487c <open_menu+0x12c>)
+2001484c:	4b1c      	ldr	r3, [pc, #112]	; (200148c0 <open_menu+0x170>)
+2001484e:	4798      	blx	r3
+			display_gotoxy(0, 0);
+20014850:	2100      	movs	r1, #0
+20014852:	4608      	mov	r0, r1
+20014854:	4b08      	ldr	r3, [pc, #32]	; (20014878 <open_menu+0x128>)
+20014856:	4798      	blx	r3
+			display_puts("Your file has been saved");
+20014858:	481a      	ldr	r0, [pc, #104]	; (200148c4 <open_menu+0x174>)
+2001485a:	4b1b      	ldr	r3, [pc, #108]	; (200148c8 <open_menu+0x178>)
+2001485c:	4798      	blx	r3
+			start_time();
+2001485e:	4b1b      	ldr	r3, [pc, #108]	; (200148cc <open_menu+0x17c>)
+20014860:	4798      	blx	r3
+			break;
+20014862:	e7a2      	b.n	200147aa <open_menu+0x5a>
+		default: display_cls();
+20014864:	4b15      	ldr	r3, [pc, #84]	; (200148bc <open_menu+0x16c>)
+20014866:	4798      	blx	r3
+			 display_gotoxy(0, 0);
+20014868:	2100      	movs	r1, #0
+2001486a:	4608      	mov	r0, r1
+2001486c:	4b02      	ldr	r3, [pc, #8]	; (20014878 <open_menu+0x128>)
+2001486e:	4798      	blx	r3
+			 display_puts("Error: menu selection out of bounds");
+20014870:	4817      	ldr	r0, [pc, #92]	; (200148d0 <open_menu+0x180>)
+20014872:	4b15      	ldr	r3, [pc, #84]	; (200148c8 <open_menu+0x178>)
+20014874:	4798      	blx	r3
+			 break;
+20014876:	e798      	b.n	200147aa <open_menu+0x5a>
+20014878:	20014919 	.word	0x20014919
+2001487c:	20015210 	.word	0x20015210
+20014880:	20014b80 	.word	0x20014b80
+20014884:	200143a1 	.word	0x200143a1
+20014888:	2001494d 	.word	0x2001494d
+2001488c:	20014951 	.word	0x20014951
+20014890:	20014939 	.word	0x20014939
+20014894:	20014b9c 	.word	0x20014b9c
+20014898:	20014625 	.word	0x20014625
+2001489c:	20014bb4 	.word	0x20014bb4
+200148a0:	20014941 	.word	0x20014941
+200148a4:	20014bd4 	.word	0x20014bd4
+200148a8:	20014bf0 	.word	0x20014bf0
+200148ac:	2001493d 	.word	0x2001493d
+200148b0:	20014c04 	.word	0x20014c04
+200148b4:	20014675 	.word	0x20014675
+200148b8:	20014949 	.word	0x20014949
+200148bc:	20014911 	.word	0x20014911
+200148c0:	20014931 	.word	0x20014931
+200148c4:	20014c1c 	.word	0x20014c1c
+200148c8:	200142f5 	.word	0x200142f5
+200148cc:	20014945 	.word	0x20014945
+200148d0:	20014c38 	.word	0x20014c38
+
+200148d4 <display_clr_line>:
+}
+
+void display_clr_line(int line)
+{
+200148d4:	b538      	push	{r3, r4, r5, lr}
+200148d6:	4605      	mov	r5, r0
+	display_gotoxy(0, line);
+200148d8:	4601      	mov	r1, r0
+200148da:	2000      	movs	r0, #0
+200148dc:	4c04      	ldr	r4, [pc, #16]	; (200148f0 <display_clr_line+0x1c>)
+200148de:	47a0      	blx	r4
+	display_puts("                         ");
+200148e0:	4804      	ldr	r0, [pc, #16]	; (200148f4 <display_clr_line+0x20>)
+200148e2:	4b05      	ldr	r3, [pc, #20]	; (200148f8 <display_clr_line+0x24>)
+200148e4:	4798      	blx	r3
+	display_gotoxy(0, line);
+200148e6:	4629      	mov	r1, r5
+200148e8:	2000      	movs	r0, #0
+200148ea:	47a0      	blx	r4
+200148ec:	bd38      	pop	{r3, r4, r5, pc}
+200148ee:	bf00      	nop
+200148f0:	20014919 	.word	0x20014919
+200148f4:	20014c5c 	.word	0x20014c5c
+200148f8:	200142f5 	.word	0x200142f5
+
+200148fc <led_set>:
+.equ	SVCDraw,            59
+
+.thumb_func 
+.global led_set
+led_set:
+	svc SVCLedSet
+200148fc:	df00      	svc	0
+	bx lr
+200148fe:	4770      	bx	lr
+
+20014900 <led_read>:
+
+.thumb_func
+.global led_read
+led_read:
+	svc SVCLedRead
+20014900:	df01      	svc	1
+	bx lr
+20014902:	4770      	bx	lr
+
+20014904 <button_read>:
+
+.thumb_func
+.global button_read
+button_read:
+	svc SVCButtonRead
+20014904:	df04      	svc	4
+	bx lr
+20014906:	4770      	bx	lr
+
+20014908 <clock_read>:
+
+.thumb_func
+.global clock_read
+clock_read:
+	svc SVCClockRead
+20014908:	df05      	svc	5
+	bx lr
+2001490a:	4770      	bx	lr
+
+2001490c <clock_write>:
+
+.thumb_func
+.global clock_write
+clock_write:
+	svc SVCClockWrite
+2001490c:	df06      	svc	6
+	bx lr
+2001490e:	4770      	bx	lr
+
+20014910 <display_cls>:
+
+.thumb_func
+.global display_cls
+display_cls:
+	svc SVCDisplayCls
+20014910:	df0e      	svc	14
+	bx lr
+20014912:	4770      	bx	lr
+
+20014914 <display_putc>:
+
+.thumb_func
+.global display_putc
+display_putc:
+	svc SVCDisplayPutc
+20014914:	df0f      	svc	15
+	bx lr
+20014916:	4770      	bx	lr
+
+20014918 <display_gotoxy>:
+
+.thumb_func
+.global display_gotoxy
+display_gotoxy:
+	svc SVCDisplayGotoxy
+20014918:	df10      	svc	16
+	bx lr
+2001491a:	4770      	bx	lr
+
+2001491c <display_numlines>:
+
+.thumb_func
+.global display_numlines
+display_numlines:
+	svc SVCDisplayNumLines
+2001491c:	df11      	svc	17
+	bx lr
+2001491e:	4770      	bx	lr
+
+20014920 <display_current_line>:
+
+.thumb_func
+.global display_current_line
+display_current_line:
+	svc SVCDisplayCurrLine
+20014920:	df12      	svc	18
+	bx lr
+20014922:	4770      	bx	lr
+
+20014924 <update_stats>:
+
+.thumb_func
+.global update_stats
+update_stats:
+	svc SVCUpdateStats
+20014924:	df32      	svc	50	; 0x32
+	bx lr
+20014926:	4770      	bx	lr
+
+20014928 <set_name>:
+
+.thumb_func
+.global set_name
+set_name:
+	svc SVCSetName
+20014928:	df33      	svc	51	; 0x33
+	bx lr
+2001492a:	4770      	bx	lr
+
+2001492c <read_name>:
+
+.thumb_func
+.global read_name
+read_name:
+	svc SVCReadName
+2001492c:	df34      	svc	52	; 0x34
+	bx lr
+2001492e:	4770      	bx	lr
+
+20014930 <save_file>:
+
+.thumb_func
+.global save_file
+save_file:
+	svc SVCSaveFile
+20014930:	df38      	svc	56	; 0x38
+	bx lr
+20014932:	4770      	bx	lr
+
+20014934 <is_new_file>:
+
+.thumb_func
+.global is_new_file
+is_new_file:
+	svc SVCIsNewFile
+20014934:	df39      	svc	57	; 0x39
+	bx lr
+20014936:	4770      	bx	lr
+
+20014938 <feed>:
+
+.thumb_func
+.global feed
+feed:
+	svc SVCFeed
+20014938:	df35      	svc	53	; 0x35
+	bx lr
+2001493a:	4770      	bx	lr
+
+2001493c <rest>:
+
+.thumb_func
+.global rest
+rest:
+	svc SVCRest
+2001493c:	df36      	svc	54	; 0x36
+	bx lr
+2001493e:	4770      	bx	lr
+
+20014940 <play>:
+
+.thumb_func
+.global play
+play:
+	svc SVCPlay
+20014940:	df37      	svc	55	; 0x37
+	bx lr
+20014942:	4770      	bx	lr
+
+20014944 <start_time>:
+
+.thumb_func
+.global start_time
+start_time:
+	svc SVCStartTime
+20014944:	df13      	svc	19
+	bx lr
+20014946:	4770      	bx	lr
+
+20014948 <stop_time>:
+
+.thumb_func
+.global stop_time
+stop_time:
+	svc SVCStopTime
+20014948:	df15      	svc	21
+	bx lr
+2001494a:	4770      	bx	lr
+
+2001494c <delay_ms>:
+
+.thumb_func
+.global delay_ms
+delay_ms:
+	svc SVCDelayMs
+2001494c:	df3a      	svc	58	; 0x3a
+	bx lr
+2001494e:	4770      	bx	lr
+
+20014950 <draw>:
+
+.thumb_func
+.global draw
+draw:
+	svc SVCDraw
+20014950:	df3b      	svc	59	; 0x3b
+	bx lr
+20014952:	4770      	bx	lr
+
+20014954 <register_fini>:
+20014954:	4b02      	ldr	r3, [pc, #8]	; (20014960 <register_fini+0xc>)
+20014956:	b113      	cbz	r3, 2001495e <register_fini+0xa>
+20014958:	4802      	ldr	r0, [pc, #8]	; (20014964 <register_fini+0x10>)
+2001495a:	f000 b805 	b.w	20014968 <atexit>
+2001495e:	4770      	bx	lr
+20014960:	00000000 	.word	0x00000000
+20014964:	20014975 	.word	0x20014975
+
+20014968 <atexit>:
+20014968:	2300      	movs	r3, #0
+2001496a:	4601      	mov	r1, r0
+2001496c:	461a      	mov	r2, r3
+2001496e:	4618      	mov	r0, r3
+20014970:	f000 b81e 	b.w	200149b0 <__register_exitproc>
+
+20014974 <__libc_fini_array>:
+20014974:	b538      	push	{r3, r4, r5, lr}
+20014976:	4c0a      	ldr	r4, [pc, #40]	; (200149a0 <__libc_fini_array+0x2c>)
+20014978:	4d0a      	ldr	r5, [pc, #40]	; (200149a4 <__libc_fini_array+0x30>)
+2001497a:	1b64      	subs	r4, r4, r5
+2001497c:	10a4      	asrs	r4, r4, #2
+2001497e:	d00a      	beq.n	20014996 <__libc_fini_array+0x22>
+20014980:	f104 4380 	add.w	r3, r4, #1073741824	; 0x40000000
+20014984:	3b01      	subs	r3, #1
+20014986:	eb05 0583 	add.w	r5, r5, r3, lsl #2
+2001498a:	3c01      	subs	r4, #1
+2001498c:	f855 3904 	ldr.w	r3, [r5], #-4
+20014990:	4798      	blx	r3
+20014992:	2c00      	cmp	r4, #0
+20014994:	d1f9      	bne.n	2001498a <__libc_fini_array+0x16>
+20014996:	e8bd 4038 	ldmia.w	sp!, {r3, r4, r5, lr}
+2001499a:	f000 b9f7 	b.w	20014d8c <_fini>
+2001499e:	bf00      	nop
+200149a0:	20014d9c 	.word	0x20014d9c
+200149a4:	20014d98 	.word	0x20014d98
+
+200149a8 <__retarget_lock_acquire_recursive>:
+200149a8:	4770      	bx	lr
+200149aa:	bf00      	nop
+
+200149ac <__retarget_lock_release_recursive>:
+200149ac:	4770      	bx	lr
+200149ae:	bf00      	nop
+
+200149b0 <__register_exitproc>:
+200149b0:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
+200149b4:	4d2c      	ldr	r5, [pc, #176]	; (20014a68 <__register_exitproc+0xb8>)
+200149b6:	4606      	mov	r6, r0
+200149b8:	6828      	ldr	r0, [r5, #0]
+200149ba:	4698      	mov	r8, r3
+200149bc:	460f      	mov	r7, r1
+200149be:	4691      	mov	r9, r2
+200149c0:	f7ff fff2 	bl	200149a8 <__retarget_lock_acquire_recursive>
+200149c4:	4b29      	ldr	r3, [pc, #164]	; (20014a6c <__register_exitproc+0xbc>)
+200149c6:	681c      	ldr	r4, [r3, #0]
+200149c8:	f8d4 3148 	ldr.w	r3, [r4, #328]	; 0x148
+200149cc:	2b00      	cmp	r3, #0
+200149ce:	d03e      	beq.n	20014a4e <__register_exitproc+0x9e>
+200149d0:	685a      	ldr	r2, [r3, #4]
+200149d2:	2a1f      	cmp	r2, #31
+200149d4:	dc1c      	bgt.n	20014a10 <__register_exitproc+0x60>
+200149d6:	f102 0e01 	add.w	lr, r2, #1
+200149da:	b176      	cbz	r6, 200149fa <__register_exitproc+0x4a>
+200149dc:	eb03 0182 	add.w	r1, r3, r2, lsl #2
+200149e0:	2401      	movs	r4, #1
+200149e2:	f8c1 9088 	str.w	r9, [r1, #136]	; 0x88
+200149e6:	f8d3 0188 	ldr.w	r0, [r3, #392]	; 0x188
+200149ea:	4094      	lsls	r4, r2
+200149ec:	4320      	orrs	r0, r4
+200149ee:	2e02      	cmp	r6, #2
+200149f0:	f8c3 0188 	str.w	r0, [r3, #392]	; 0x188
+200149f4:	f8c1 8108 	str.w	r8, [r1, #264]	; 0x108
+200149f8:	d023      	beq.n	20014a42 <__register_exitproc+0x92>
+200149fa:	3202      	adds	r2, #2
+200149fc:	f8c3 e004 	str.w	lr, [r3, #4]
+20014a00:	6828      	ldr	r0, [r5, #0]
+20014a02:	f843 7022 	str.w	r7, [r3, r2, lsl #2]
+20014a06:	f7ff ffd1 	bl	200149ac <__retarget_lock_release_recursive>
+20014a0a:	2000      	movs	r0, #0
+20014a0c:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
+20014a10:	4b17      	ldr	r3, [pc, #92]	; (20014a70 <__register_exitproc+0xc0>)
+20014a12:	b30b      	cbz	r3, 20014a58 <__register_exitproc+0xa8>
+20014a14:	f44f 70c8 	mov.w	r0, #400	; 0x190
+20014a18:	f3af 8000 	nop.w
+20014a1c:	4603      	mov	r3, r0
+20014a1e:	b1d8      	cbz	r0, 20014a58 <__register_exitproc+0xa8>
+20014a20:	f8d4 2148 	ldr.w	r2, [r4, #328]	; 0x148
+20014a24:	6002      	str	r2, [r0, #0]
+20014a26:	2100      	movs	r1, #0
+20014a28:	6041      	str	r1, [r0, #4]
+20014a2a:	460a      	mov	r2, r1
+20014a2c:	f8c4 0148 	str.w	r0, [r4, #328]	; 0x148
+20014a30:	f04f 0e01 	mov.w	lr, #1
+20014a34:	f8c0 1188 	str.w	r1, [r0, #392]	; 0x188
+20014a38:	f8c0 118c 	str.w	r1, [r0, #396]	; 0x18c
+20014a3c:	2e00      	cmp	r6, #0
+20014a3e:	d0dc      	beq.n	200149fa <__register_exitproc+0x4a>
+20014a40:	e7cc      	b.n	200149dc <__register_exitproc+0x2c>
+20014a42:	f8d3 118c 	ldr.w	r1, [r3, #396]	; 0x18c
+20014a46:	430c      	orrs	r4, r1
+20014a48:	f8c3 418c 	str.w	r4, [r3, #396]	; 0x18c
+20014a4c:	e7d5      	b.n	200149fa <__register_exitproc+0x4a>
+20014a4e:	f504 73a6 	add.w	r3, r4, #332	; 0x14c
+20014a52:	f8c4 3148 	str.w	r3, [r4, #328]	; 0x148
+20014a56:	e7bb      	b.n	200149d0 <__register_exitproc+0x20>
+20014a58:	6828      	ldr	r0, [r5, #0]
+20014a5a:	f7ff ffa7 	bl	200149ac <__retarget_lock_release_recursive>
+20014a5e:	f04f 30ff 	mov.w	r0, #4294967295
+20014a62:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
+20014a66:	bf00      	nop
+20014a68:	200151f0 	.word	0x200151f0
+20014a6c:	20014d74 	.word	0x20014d74
+20014a70:	00000000 	.word	0x00000000
+20014a74:	74747542 	.word	0x74747542
+20014a78:	20736e6f 	.word	0x20736e6f
+20014a7c:	20262031 	.word	0x20262031
+20014a80:	73203a32 	.word	0x73203a32
+20014a84:	6c6f7263 	.word	0x6c6f7263
+20014a88:	0000006c 	.word	0x0000006c
+20014a8c:	74747542 	.word	0x74747542
+20014a90:	33206e6f 	.word	0x33206e6f
+20014a94:	6e65203a 	.word	0x6e65203a
+20014a98:	00726574 	.word	0x00726574
+20014a9c:	74747542 	.word	0x74747542
+20014aa0:	30206e6f 	.word	0x30206e6f
+20014aa4:	6f63203a 	.word	0x6f63203a
+20014aa8:	7269666e 	.word	0x7269666e
+20014aac:	0000006d 	.word	0x0000006d
+20014ab0:	656d614e 	.word	0x656d614e
+20014ab4:	7325203a 	.word	0x7325203a
+20014ab8:	00000000 	.word	0x00000000
+20014abc:	74207349 	.word	0x74207349
+20014ac0:	20736968 	.word	0x20736968
+20014ac4:	003f6b6f 	.word	0x003f6b6f
+20014ac8:	74747542 	.word	0x74747542
+20014acc:	31206e6f 	.word	0x31206e6f
+20014ad0:	6b6f203a 	.word	0x6b6f203a
+20014ad4:	736c4520 	.word	0x736c4520
+20014ad8:	63203a65 	.word	0x63203a65
+20014adc:	65636e61 	.word	0x65636e61
+20014ae0:	0000006c 	.word	0x0000006c
+20014ae4:	74616857 	.word	0x74616857
+20014ae8:	756f7720 	.word	0x756f7720
+20014aec:	7920646c 	.word	0x7920646c
+20014af0:	6120756f 	.word	0x6120756f
+20014af4:	0000646e 	.word	0x0000646e
+20014af8:	6c207325 	.word	0x6c207325
+20014afc:	20656b69 	.word	0x20656b69
+20014b00:	64206f74 	.word	0x64206f74
+20014b04:	00003f6f 	.word	0x00003f6f
+20014b08:	65636e4f 	.word	0x65636e4f
+20014b0c:	6e696620 	.word	0x6e696620
+20014b10:	65687369 	.word	0x65687369
+20014b14:	69762064 	.word	0x69762064
+20014b18:	6e697765 	.word	0x6e697765
+20014b1c:	00002c67 	.word	0x00002c67
+20014b20:	73657270 	.word	0x73657270
+20014b24:	6e612073 	.word	0x6e612073
+20014b28:	75622079 	.word	0x75622079
+20014b2c:	6e6f7474 	.word	0x6e6f7474
+20014b30:	206f7420 	.word	0x206f7420
+20014b34:	746e6f63 	.word	0x746e6f63
+20014b38:	65756e69 	.word	0x65756e69
+20014b3c:	00000000 	.word	0x00000000
+20014b40:	676e7548 	.word	0x676e7548
+20014b44:	203a7265 	.word	0x203a7265
+20014b48:	25202020 	.word	0x25202020
+20014b4c:	00000064 	.word	0x00000064
+20014b50:	72656e45 	.word	0x72656e45
+20014b54:	203a7967 	.word	0x203a7967
+20014b58:	25202020 	.word	0x25202020
+20014b5c:	00000064 	.word	0x00000064
+20014b60:	70706148 	.word	0x70706148
+20014b64:	73656e69 	.word	0x73656e69
+20014b68:	25203a73 	.word	0x25203a73
+20014b6c:	00000064 	.word	0x00000064
+20014b70:	20656741 	.word	0x20656741
+20014b74:	2020203a 	.word	0x2020203a
+20014b78:	25202020 	.word	0x25202020
+20014b7c:	00000064 	.word	0x00000064
+20014b80:	20756f59 	.word	0x20756f59
+20014b84:	65766967 	.word	0x65766967
+20014b88:	20732520 	.word	0x20732520
+20014b8c:	656d6f73 	.word	0x656d6f73
+20014b90:	74657020 	.word	0x74657020
+20014b94:	6f6f6620 	.word	0x6f6f6620
+20014b98:	00000064 	.word	0x00000064
+20014b9c:	73277325 	.word	0x73277325
+20014ba0:	6e756820 	.word	0x6e756820
+20014ba4:	20726567 	.word	0x20726567
+20014ba8:	6e207369 	.word	0x6e207369
+20014bac:	2520776f 	.word	0x2520776f
+20014bb0:	00000064 	.word	0x00000064
+20014bb4:	20756f59 	.word	0x20756f59
+20014bb8:	79616c70 	.word	0x79616c70
+20014bbc:	74697720 	.word	0x74697720
+20014bc0:	73252068 	.word	0x73252068
+20014bc4:	726f6620 	.word	0x726f6620
+20014bc8:	77206120 	.word	0x77206120
+20014bcc:	656c6968 	.word	0x656c6968
+20014bd0:	00000000 	.word	0x00000000
+20014bd4:	73277325 	.word	0x73277325
+20014bd8:	70616820 	.word	0x70616820
+20014bdc:	656e6970 	.word	0x656e6970
+20014be0:	69207373 	.word	0x69207373
+20014be4:	6f6e2073 	.word	0x6f6e2073
+20014be8:	64252077 	.word	0x64252077
+20014bec:	00000000 	.word	0x00000000
+20014bf0:	74207325 	.word	0x74207325
+20014bf4:	73656b61 	.word	0x73656b61
+20014bf8:	6e206120 	.word	0x6e206120
+20014bfc:	2e2e7061 	.word	0x2e2e7061
+20014c00:	0000002e 	.word	0x0000002e
+20014c04:	73277325 	.word	0x73277325
+20014c08:	656e6520 	.word	0x656e6520
+20014c0c:	20796772 	.word	0x20796772
+20014c10:	6e207369 	.word	0x6e207369
+20014c14:	2520776f 	.word	0x2520776f
+20014c18:	00000064 	.word	0x00000064
+20014c1c:	72756f59 	.word	0x72756f59
+20014c20:	6c696620 	.word	0x6c696620
+20014c24:	61682065 	.word	0x61682065
+20014c28:	65622073 	.word	0x65622073
+20014c2c:	73206e65 	.word	0x73206e65
+20014c30:	64657661 	.word	0x64657661
+20014c34:	00000000 	.word	0x00000000
+20014c38:	6f727245 	.word	0x6f727245
+20014c3c:	6d203a72 	.word	0x6d203a72
+20014c40:	20756e65 	.word	0x20756e65
+20014c44:	656c6573 	.word	0x656c6573
+20014c48:	6f697463 	.word	0x6f697463
+20014c4c:	756f206e 	.word	0x756f206e
+20014c50:	666f2074 	.word	0x666f2074
+20014c54:	756f6220 	.word	0x756f6220
+20014c58:	0073646e 	.word	0x0073646e
+20014c5c:	20202020 	.word	0x20202020
+20014c60:	20202020 	.word	0x20202020
+20014c64:	20202020 	.word	0x20202020
+20014c68:	20202020 	.word	0x20202020
+20014c6c:	20202020 	.word	0x20202020
+20014c70:	20202020 	.word	0x20202020
+20014c74:	00000020 	.word	0x00000020
+20014c78:	656e2041 	.word	0x656e2041
+20014c7c:	65702077 	.word	0x65702077
+20014c80:	61682074 	.word	0x61682074
+20014c84:	65622073 	.word	0x65622073
+20014c88:	62206e65 	.word	0x62206e65
+20014c8c:	216e726f 	.word	0x216e726f
+20014c90:	00000000 	.word	0x00000000
+20014c94:	61656c50 	.word	0x61656c50
+20014c98:	65206573 	.word	0x65206573
+20014c9c:	7265746e 	.word	0x7265746e
+20014ca0:	6e206120 	.word	0x6e206120
+20014ca4:	00656d61 	.word	0x00656d61
+20014ca8:	20726f66 	.word	0x20726f66
+20014cac:	72756f79 	.word	0x72756f79
+20014cb0:	77656e20 	.word	0x77656e20
+20014cb4:	74657020 	.word	0x74657020
+20014cb8:	0000003a 	.word	0x0000003a
+20014cbc:	676e6f43 	.word	0x676e6f43
+20014cc0:	75746172 	.word	0x75746172
+20014cc4:	6974616c 	.word	0x6974616c
+20014cc8:	21736e6f 	.word	0x21736e6f
+20014ccc:	00000000 	.word	0x00000000
+20014cd0:	65766168 	.word	0x65766168
+20014cd4:	6d616e20 	.word	0x6d616e20
+20014cd8:	79206465 	.word	0x79206465
+20014cdc:	2072756f 	.word	0x2072756f
+20014ce0:	3a746570 	.word	0x3a746570
+20014ce4:	00000000 	.word	0x00000000
+20014ce8:	00007325 	.word	0x00007325
+20014cec:	74616857 	.word	0x74616857
+20014cf0:	65726220 	.word	0x65726220
+20014cf4:	69206465 	.word	0x69206465
+20014cf8:	73252073 	.word	0x73252073
+20014cfc:	00000000 	.word	0x00000000
+20014d00:	69207325 	.word	0x69207325
+20014d04:	20612073 	.word	0x20612073
+20014d08:	002e7325 	.word	0x002e7325
+20014d0c:	636c6557 	.word	0x636c6557
+20014d10:	20656d6f 	.word	0x20656d6f
+20014d14:	6b636162 	.word	0x6b636162
+20014d18:	00000021 	.word	0x00000021
+20014d1c:	6d207325 	.word	0x6d207325
+20014d20:	65737369 	.word	0x65737369
+20014d24:	6f792064 	.word	0x6f792064
+20014d28:	00002e75 	.word	0x00002e75
+20014d2c:	64656546 	.word	0x64656546
+20014d30:	00000000 	.word	0x00000000
+20014d34:	79616c50 	.word	0x79616c50
+20014d38:	00000000 	.word	0x00000000
+20014d3c:	20747550 	.word	0x20747550
+20014d40:	73206f74 	.word	0x73206f74
+20014d44:	7065656c 	.word	0x7065656c
+20014d48:	00000000 	.word	0x00000000
+20014d4c:	63656843 	.word	0x63656843
+20014d50:	7453206b 	.word	0x7453206b
+20014d54:	73757461 	.word	0x73757461
+20014d58:	00000000 	.word	0x00000000
+20014d5c:	65766153 	.word	0x65766153
+20014d60:	00000000 	.word	0x00000000
+20014d64:	62617243 	.word	0x62617243
+20014d68:	00000000 	.word	0x00000000
+20014d6c:	63696e55 	.word	0x63696e55
+20014d70:	006e726f 	.word	0x006e726f
+
+20014d74 <_global_impure_ptr>:
+20014d74:	20014dc8                                .M. 
+
+20014d78 <_init>:
+20014d78:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+20014d7a:	bf00      	nop
+20014d7c:	bcf8      	pop	{r3, r4, r5, r6, r7}
+20014d7e:	bc08      	pop	{r3}
+20014d80:	469e      	mov	lr, r3
+20014d82:	4770      	bx	lr
+
+20014d84 <__init_array_start>:
+20014d84:	20014955 	.word	0x20014955
+
+20014d88 <__frame_dummy_init_array_entry>:
+20014d88:	200142ad                                .B. 
+
+20014d8c <_fini>:
+20014d8c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+20014d8e:	bf00      	nop
+20014d90:	bcf8      	pop	{r3, r4, r5, r6, r7}
+20014d92:	bc08      	pop	{r3}
+20014d94:	469e      	mov	lr, r3
+20014d96:	4770      	bx	lr
+
+20014d98 <__fini_array_start>:
+20014d98:	20014289 	.word	0x20014289

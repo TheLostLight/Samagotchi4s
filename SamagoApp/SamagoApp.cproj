@@ -158,13 +158,7 @@
     <Compile Include="minilib\buttons.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="minilib\clock.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="minilib\display.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="minilib\led.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="minilib\minilib.s">
