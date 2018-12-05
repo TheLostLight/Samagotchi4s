@@ -26,8 +26,8 @@ typedef struct{
 	
 }pet;
 
-pet user_pet;
-bool isNewFile;
+pet user_pet; //Kernel pet that has its stats decreased through mtimer
+bool isNewFile; //Bool that's set depending on whether an old file was loaded at beginning of application
 
 void update_petstats( pet* );
 

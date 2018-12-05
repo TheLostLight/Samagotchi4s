@@ -9,10 +9,12 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
+/* System calls related to OLED Screen */
 void display_putc(int c);
 void display_gotoxy(uint32_t, uint32_t);
 void display_cls(void);
 
+/* Prints a given string to the display */
 void display_puts(uint8_t* string)
 {
 	uint8_t c;
@@ -20,6 +22,7 @@ void display_puts(uint8_t* string)
 	while(c = *string++) display_putc(c);
 }
 
+/* Gives the log base 10 for a number. Useful for determining number of digits in a given value. */
 int log_10(int num)
 {
 	int i = 0;
@@ -33,6 +36,7 @@ int log_10(int num)
 	return i;
 }
 
+/* Prints an int as a string to the display */
 void display_printn(int val)
 {
 	int lim = log_10(val);
@@ -56,6 +60,7 @@ void display_printn(int val)
 }
 
 /* Adapted from vishal's example: https://stackoverflow.com/questions/1735236/how-to-write-my-own-printf-in-c on November 8, 2018, 2:13 P.M. */
+/* Prints a formatted string to screen */
 void display_printf(const char *format, ...)
 {
 	char *ind;

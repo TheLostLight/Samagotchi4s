@@ -28,7 +28,7 @@ MINIOSAPP main(void){
 	
 	is_new_file(&new);
 	
-	if(new)
+	if(new) //If no file was present before beginning application, and SamagOS created a new one do this.
 	{
 		 display_gotoxy(0, 0);
 		 display_puts("A new pet has been born!");
@@ -37,13 +37,13 @@ MINIOSAPP main(void){
 		 display_gotoxy(0, 3);
 		 display_puts("for your new pet:");
 		 
-		 delay_ms(3000);
+		 delay_ms(3000); //Delay so that user has time to read information. Could be substituted for a "button listener".
 		 display_cls();
 		 
-		 while(!make_name()) display_cls();
+		 while(!make_name()) display_cls(); //Loop until user has confirmed a name for their pet.
 		 
 		 display_cls();
-		 set_name(&user_pet.name);
+		 set_name(&user_pet.name); //Probably an unnecessary step. Currently does nothing in kernel.
 		 
 		 display_gotoxy(0, 0);
 		 display_printf("Congratulations!");
@@ -62,7 +62,7 @@ MINIOSAPP main(void){
 		 int pos = 0;
 		 display_puts(breed_choices[pos]);
 		 
-		 while(selection != Button2)
+		 while(selection != Button2) //Loop for selecting breed. Only two right now, but written in an easily expandable way.
 		 {
 			 button_read(&selection);
 			 
@@ -81,7 +81,7 @@ MINIOSAPP main(void){
 		 display_cls();
 		 draw(user_pet.breed, 100);
 	}
-	else
+	else //If an old file was loaded before starting application, do this
 	{
 		read_name(&user_pet);
 		display_gotoxy(0, 0);
@@ -99,7 +99,7 @@ MINIOSAPP main(void){
 	print_menu_header();
 	start_time();
 
-	while(true)
+	while(true) //Loop for main menu
 	{
 		display_puts(main_menu[menuc]);
 		button_read(&selection);
@@ -109,10 +109,10 @@ MINIOSAPP main(void){
 		switch(selection)
 		{
 			case NoButton: /* error */ break;
-			case Button0 : show_stats();
-			case Button1 : if(menuc > 0) --menuc; else menuc = MENU_NUM-1; break;
-			case Button2 : open_menu(menuc); break;
-			case Button3 : menuc = (menuc+1)%MENU_NUM; break;
+			case Button0 : show_stats(); //Shortcut for viewing pet stats
+			case Button1 : if(menuc > 0) --menuc; else menuc = MENU_NUM-1; break; //Scroll down options in menu
+			case Button2 : open_menu(menuc); break; //Perform currently selected option
+			case Button3 : menuc = (menuc+1)%MENU_NUM; break; //Scroll up options in menu
 			default      : break;
 		}
 		
@@ -124,6 +124,7 @@ MINIOSAPP main(void){
 	return 0;	
 }
 
+/* Routine for setting the name of the user pet */
 bool make_name(void)
 {
 	display_gotoxy(0, 0);
@@ -200,6 +201,7 @@ void increment_cursor(void)
 	}
 }
 
+/* Performs an event based on the number of button pressed by user */
 void open_menu(int op)
 {
 	switch(op)
@@ -271,6 +273,7 @@ void show_stats()
 	button_read(&selection); //clear input in case user accidentally presses button here
 	
 	display_cls();
+	//Display all main stats
 	display_gotoxy(0, 0);
 	display_printf("Hunger:    %d", MAX_STAT-user_pet.satiety);
 	display_gotoxy(0, 1);
@@ -282,13 +285,14 @@ void show_stats()
 
 	button_read(&selection); //clear once more
 
-	do button_read(&selection);
+	do button_read(&selection); //Wait for user to press button before proceeding
 	while (selection == NoButton);
 
 	start_time();
 	print_menu_header();
 }
 
+/* Used as a prologue to the Main menu */
 void print_menu_header()
 {
 	display_cls();
@@ -300,6 +304,7 @@ void print_menu_header()
 	button_read(&selection);
 }
 
+/* Clears current line of the display */
 void display_clr_line(int line)
 {
 	display_gotoxy(0, line);

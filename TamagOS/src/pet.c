@@ -6,9 +6,9 @@
  */ 
 #include "pet.h"
 
-const uint32_t MAXSTAT = 100;
+const uint32_t MAXSTAT = 100; //Maximum value for a stat. Defined here for easier adjustment
 
-void update_petstats(pet* p)
+void update_petstats(pet* p) //Sets application pet stats to the kernel's pet stats
 {
 	p->age       = user_pet.age;
 	p->satiety   = user_pet.satiety;
@@ -16,7 +16,7 @@ void update_petstats(pet* p)
 	p->happiness = user_pet.happiness;
 }
 
-static void increaseS(int i)
+static void increaseS(int i) //Increases Satiety (decreases hunger)
 {
 	i = user_pet.satiety + i;
 	
@@ -25,7 +25,7 @@ static void increaseS(int i)
 	else user_pet.satiety = i;
 }
 
-static void increaseE(int i)
+static void increaseE(int i) //Increases Energy
 {
 	i = user_pet.energy + i;
 	
@@ -34,7 +34,7 @@ static void increaseE(int i)
 	else user_pet.energy = i;
 }
 
-static void increaseH(int i)
+static void increaseH(int i) //Increases Happiness
 {
 	i = user_pet.happiness + i;
 	
@@ -43,7 +43,7 @@ static void increaseH(int i)
 	else user_pet.happiness = i;
 }
 
-void feed_pet(pet* p)
+void feed_pet(pet* p) //Used as a systemcall when user goes to feed pet. Changes kernel pet's stats by set amount.
 {
 	if(user_pet.satiety < MAXSTAT-19)
 	{
@@ -61,7 +61,7 @@ void feed_pet(pet* p)
 	update_petstats(p);
 }
 
-void rest_pet(pet* p)
+void rest_pet(pet* p) //Used as a systemcall when user goes to rest pet. Changes kernel pet's stats by set amount.
 {
 	
 	if(user_pet.energy < MAXSTAT/2 && user_pet.energy > MAXSTAT/4)
@@ -80,7 +80,7 @@ void rest_pet(pet* p)
 	update_petstats(p);
 }
 
-void play_pet(pet* p)
+void play_pet(pet* p) //Used as a systemcall when user goes to play with pet. Changes kernel pet's stats by set amount.
 {
 	if(user_pet.energy < MAXSTAT/3 || user_pet.satiety < MAXSTAT/4)
 	{

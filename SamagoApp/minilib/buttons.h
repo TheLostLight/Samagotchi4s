@@ -14,6 +14,6 @@ typedef int32_t tButtonNum;
 enum tButtonNum{NoButton = -1, Button0, Button1, Button2, Button3, Button4};
 	
 	
-void button_read( tButtonNum* );
+void button_read( tButtonNum* ); //Reads the last pressed button.
 
 #endif /* BUTTONS_H_ */

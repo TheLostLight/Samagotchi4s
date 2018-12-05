@@ -23,9 +23,10 @@ typedef struct{
 	
 }pet;
 
+/* Pet related system calls */
 void update_stats(pet*);
 
-void set_name(uint8_t*);
+void set_name(uint8_t*); //Probably unnecessary. Does nothing in Kernel currently.
 
 void read_name(pet*);
 
@@ -39,10 +40,10 @@ void play( pet* );
 
 void draw(tBreed, uint32_t);
 
-void start_time(void);
-void stop_time(void);
-void delay_ms(uint32_t);
+void start_time(void); //starts timer for ticking down pet stats
+void stop_time(void); //pauses timer
+void delay_ms(uint32_t); //Delay for making pauses in program flow
 
-const uint32_t MAX_STAT = 100;
+const uint32_t MAX_STAT = 100; //Max value for pet stats. Should be the same as the kernel value. "Or is this value even necessary?"
 
 #endif /* PET_H_ */

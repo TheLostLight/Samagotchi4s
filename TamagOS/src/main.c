@@ -21,7 +21,7 @@ int main(void)
 	hal_io_button_startall_int();
 	
 	
-#ifdef SYS_INIT_FROM_CONSOLE
+#ifdef SYS_INIT_FROM_CONSOLE //This gets skipped
 	//Execute the console
 	console_begin();	
 #else
@@ -29,12 +29,14 @@ int main(void)
 	//Set up app values
 	isNewFile = true;
 	pet user_pet = { 100, 100, 100, 0, "", 0 };
+	//Ideally this part will be replaced by Shahana's code for checking if a save file exists
+	//And then loading stats from file if it does. Otherwise this section would execute.
 	
 	//Create process with default app	
 	uint32_t loader_rval;
 	uint32_t sched_rval;
 	
-	sched_rval = scheduler_process_create( SYS_APP_DEFAULT_NAME, "Samago", &loader_rval );
+	sched_rval = scheduler_process_create( SYS_APP_DEFAULT_NAME, "Samago", &loader_rval ); //SYS_APP_DEFAULT_NAME has been changed to SamagoApp.bin
 	
 	if(  sched_rval == SCHEDULER_PROCESS_CREATE_FAILED ){
 		if( loader_rval ==  LOADER_NO_APP_FOUND )		system_panic( "Default App not found" );	

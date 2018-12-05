@@ -138,25 +138,27 @@ void syscalls_entry_point(void){
 		
 		//Pet
 		case SVCUpdateStats:        update_petstats((pet*)arg0);                                                    break;
-		case SVCSetName:            user_pet.name = ((pet*)arg0)->name;                                             break;
+		case SVCSetName:            /* Probably not actually needed as a system call */                             break;
 		case SVCReadName:           ((pet*)arg0)->name = user_pet.name;                                             break;
 		case SVCPetFeed:            feed_pet((pet*)arg0);                                                           break;
 		case SVCPetRest:            rest_pet((pet*)arg0);                                                           break;
 		case SVCPetPlay:            play_pet((pet*)arg0);                                                           break;
 		
 		//File
-		case SVCSaveFile:           break;
-		case SVCIsNewFile:          *((bool*)arg0) = isNewFile;                                                     break;
+		case SVCSaveFile:           /* This would call a method Shahana wrote to save pet stats to a file */        break;
+		case SVCIsNewFile:          *((bool*)arg0) = isNewFile;/* Checks if current file is new or loaded from save */break;
 		
 		//Control
 		case SVCDelayMS:            hal_cpu_delay((uint32_t)arg0);    /*alternative to putting thread to sleep*/    break;
-		case SVCDisplayDraw:        for(int i=0; i<(int)arg1; i++) show_full_screen((tBreed)arg0);                        break;
+		                            /*Draws a pet depending on its breed */
+		case SVCDisplayDraw:        for(int i=0; i<(int)arg1; i++) show_full_screen((tBreed)arg0);                  break;
 		
 		//Error
 		default:																									break;
 	}
 }
 
+/* Callback for decreasing pet stats at regular intervals */
 void tick_stats(){
 	if (user_pet.satiety>0)
 	{
